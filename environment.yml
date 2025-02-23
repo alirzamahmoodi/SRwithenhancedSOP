@@ -1,0 +1,20 @@
+name: google-ai
+channels:
+  - defaults
+  - pytorch
+dependencies:
+  - python = 3.9
+  - pip
+  - wkhtmltopdf
+  - pip:
+      - google-generativeai
+      - librosa
+      - pydicom
+      - pynetdicom
+      - cx_Oracle
+      - numpy
+      - scipy
+      - pyyaml
+      - pytest
+      - pytest-mock
+      - pdfkit
