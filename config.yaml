@@ -1,0 +1,11 @@
+# config.yaml
+AE_TITLE: "TRANSCRIPTOR"
+PACS_IP: "localhost"
+PACS_PORT: 104
+USERNAME: "persiangulfadmin"
+PASSWORD: "Raoufsoft1003"
+GEMINI_API_KEY: "AIzaSyCtch3XLoQtYSbQuAFiHhuluqrzWr88rH4"
+OUTPUT_DIR: "./retrieved_dicoms"
+PACS_RECEIVER_AE_TITLE: "PG_RCV101"
+PRIMARY_SPOOL_FOLDER: "C:/RaoufSoft/Spool/102"
+PROCESSED_SPOOL_FOLDER: "C:/RaoufSoft/Spool/Processed"
