@@ -57,17 +57,15 @@ class AudioTranscriber:
 
 2. **Language**: Ensure the entire report is in English, even if parts of the dictation are in Persian.
 
-3. **Patient Information**: Do not include any patient information (e.g., name, ID, birth date) in the report. This will be added separately.
+3. **Patient Information**: Do not include any private patient information (e.g., name, ID, birth date) in the report. This will be added separately.
 
-4. **Tone**: Use a formal and professional tone suitable for a medical report. The report should be clear and professional.
+4. **Tone**: Use a formal and professional tone suitable for a medical report. Write consistent paragraphs and avoid bullet points or lists.
 
 5. **No Introductory Phrases**:  **Crucially, DO NOT include any introductory or conversational phrases at the beginning of the report.**  Specifically, **absolutely avoid phrases like "Here's a medical report dictation:", "Okay, here is the report:", or any similar preamble.**  The report should start immediately with the "Reading" section.
 
 6. **Accuracy**: Ensure the transcription is accurate and free of errors.
 
-7. **Formatting**: Use clear headings for each section and maintain proper formatting for readability.
-
-8. **Repetition**: Omit any repeated words or phrases."""
+7. **Repetition**: Omit any repeated words or phrases."""
             response = self.model.generate_content(
                 [uploaded_file, prompt],
                 generation_config=genai.GenerationConfig(
@@ -131,58 +129,38 @@ class AudioTranscriber:
         doc_title.CodeMeaning = "Transcription Report"
         sr_ds[(0x0040, 0xA043)].value.append(doc_title)
 
-        # **Revised Parsing and Structuring of the Transcription Content with Unified Style**
-        import re
-
-        # Define regex pattern to capture the three sections using groups.
-        pattern = (
-            r"(Reading:.*?)(?=(Conclusion:|Recommendation:|$))|"
-            r"(Conclusion:.*?)(?=(Reading:|Recommendation:|$))|"
-            r"(Recommendation:.*?)(?=(Reading:|Conclusion:|$))"
-        )
+        # **Fix: Correctly Parse and Structure the Report**
+        pattern = r"(Reading:.*?)(?=Conclusion:|Recommendation:|$)|" + \
+                r"(Conclusion:.*?)(?=Reading:|Recommendation:|$)|" + \
+                r"(Recommendation:.*?)(?=Reading:|Conclusion:|$)"
+        matches = re.findall(pattern, report_text, re.DOTALL)
 
         content_items = []
-        # Use finditer for explicit iteration over matches.
-        for match in re.finditer(pattern, report_text, re.DOTALL):
-            # Extract the matched section text from the appropriate group.
-            section_text = match.group(1) or match.group(3) or match.group(5)
-            if section_text:
-                # Extract the header and content.
-                if ":" in section_text:
-                    header, body = section_text.split(":", 1)
-                    header = header.strip().upper()  # Normalize header in uppercase.
-                    body = body.strip()
-                else:
-                    header = "UNKNOWN"
-                    body = section_text.strip()
+        for match in matches:
+            section_text = next(item for item in match if item)
+            if section_text.startswith("Reading:"):
+                code_value, code_meaning = "R-10226", "Reading"
+            elif section_text.startswith("Conclusion:"):
+                code_value, code_meaning = "R-10242", "Conclusion"
+            elif section_text.startswith("Recommendation:"):
+                code_value, code_meaning = "R-10266", "Recommendation"
+            else:
+                code_value, code_meaning = "0000", "Unknown"
 
-                # Determine the codes based on the section heading.
-                if header.upper() == "READING":
-                    code_value, code_meaning = "R-10226", "Reading"
-                elif header.upper() == "CONCLUSION":
-                    code_value, code_meaning = "R-10242", "Conclusion"
-                elif header.upper() == "RECOMMENDATION":
-                    code_value, code_meaning = "R-10266", "Recommendation"
-                else:
-                    code_value, code_meaning = "0000", "Unknown"
+            text_value = section_text.split(":", 1)[1].strip() if ":" in section_text else section_text.strip()
 
-                # Assemble the formatted text.
-                formatted_text = f"{header}:\n    {body}"
+            item = Dataset()
+            item.ValueType = "TEXT"
+            concept_code = Dataset()
+            concept_code.CodeValue = code_value
+            concept_code.CodingSchemeDesignator = "DCM"
+            concept_code.CodeMeaning = code_meaning
+            item.ConceptNameCodeSequence = [concept_code]
+            item.TextValue = text_value
+            content_items.append(item)
 
-                # Create and populate the dataset for this section.
-                item = Dataset()
-                item.ValueType = "TEXT"
-                concept_code = Dataset()
-                concept_code.CodeValue = code_value
-                concept_code.CodingSchemeDesignator = "DCM"
-                concept_code.CodeMeaning = code_meaning
-                item.ConceptNameCodeSequence = [concept_code]
-                item.TextValue = formatted_text
-                content_items.append(item)
-
-        # Fallback if no sections were matched.
+        # Fallback: If no sections were matched, add the entire transcription as "Reading"
         if not content_items:
-            formatted_text = f"READING:\n    {report_text.strip()}"
             item = Dataset()
             item.ValueType = "TEXT"
             concept_code = Dataset()
@@ -190,7 +168,7 @@ class AudioTranscriber:
             concept_code.CodingSchemeDesignator = "DCM"
             concept_code.CodeMeaning = "Reading"
             item.ConceptNameCodeSequence = [concept_code]
-            item.TextValue = formatted_text
+            item.TextValue = report_text.strip()
             content_items.append(item)
 
         # **✅ Fix: Ensure Root Container is Well-Formed**
@@ -201,7 +179,7 @@ class AudioTranscriber:
         doc_title_sequence = Dataset()
         doc_title_sequence.CodeValue = "18748-4"
         doc_title_sequence.CodingSchemeDesignator = "LN"
-        doc_title_sequence.CodeMeaning = "Test 2 Transcription Report"
+        doc_title_sequence.CodeMeaning = "Transcription Report"
         root_container.ConceptNameCodeSequence = [doc_title_sequence]
 
         # **Ensure ContentSequence Exists**
