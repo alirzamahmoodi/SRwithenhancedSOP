@@ -1,0 +1,514 @@
+(0002,0001)	OB	FileMetaInformationVersion	binary data
+(0002,0002)	UI	MediaStorageSOPClassUID	1.2.840.10008.5.1.4.1.1.88.22
+(0002,0003)	UI	MediaStorageSOPInstanceUID	1.3.12.2.1107.5.2.18.142044.30000025012404373041200000379
+(0002,0010)	UI	TransferSyntaxUID	1.2.840.10008.1.2.1
+(0002,0012)	UI	ImplementationClassUID	1.2.410.200058.1.1.98.1.1
+(0002,0013)	SH	ImplementationVersionName	OFFIS_DCMTK_361
+(0002,0016)	AE	SourceApplicationEntityTitle	PERSIANGULF_1
+(0008,0005)	CS	SpecificCharacterSet	ISO_IR 100
+(0008,0008)	CS	ImageType	ORIGINAL\PRIMARY\OTHER\CSA REPORT
+(0008,0016)	UI	SOPClassUID	1.2.840.10008.5.1.4.1.1.88.22
+(0008,0018)	UI	SOPInstanceUID	1.3.12.2.1107.5.2.18.142044.30000025012404373041200000379
+(0008,0020)	DA	StudyDate	20250124
+(0008,0021)	DA	SeriesDate	20250124
+(0008,0023)	DA	ContentDate	20250124
+(0008,0030)	TM	StudyTime	152443
+(0008,0031)	TM	SeriesTime	153325.028000
+(0008,0033)	TM	ContentTime	153325.028000
+(0008,0050)	SH	AccessionNumber	
+(0008,0060)	CS	Modality	SR
+(0008,0070)	LO	Manufacturer	SIEMENS
+(0008,0080)	LO	InstitutionName	
+(0008,0081)	ST	InstitutionAddress	
+(0008,0090)	PN	ReferringPhysicianName	
+(0008,1010)	SH	StationName	AWP142044
+(0008,1030)	LO	StudyDescription	
+(0008,103E)	LO	SeriesDescription	PhoenixZIPReport
+(0008,1040)	LO	InstitutionalDepartmentName	
+(0008,1090)	LO	ManufacturerModelName	Aera
+(0008,1111)	SQ	ReferencedPerformedProcedureStepSequence	
+(0010,0010)	PN	PatientName	RASOUL ZADEH^ZAHRA
+(0010,0020)	LO	PatientID	1260408116
+(0010,0030)	DA	PatientBirthDate	19680124
+(0010,0040)	CS	PatientSex	F
+(0010,1010)	AS	PatientAge	057Y
+(0010,1020)	DS	PatientSize	1.7
+(0010,1030)	DS	PatientWeight	90
+(0018,1020)	LO	SoftwareVersions	syngo MR E11
+(0018,1030)	LO	ProtocolName	Phoenix Document
+(0018,1200)	DA	DateOfLastCalibration	
+(0018,1201)	TM	TimeOfLastCalibration	
+(0020,000D)	UI	StudyInstanceUID	1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043
+(0020,000E)	UI	SeriesInstanceUID	1.3.12.2.1107.5.2.18.142044.30000025012404373041200000366
+(0020,0010)	SH	StudyID	1
+(0020,0011)	IS	SeriesNumber	99
+(0020,0013)	IS	InstanceNumber	7
+(0028,0006)	US	PlanarConfiguration	0
+(0028,0103)	US	PixelRepresentation	0
+(0029,0010)	LO	PrivateCreatorID	SIEMENS CSA HEADER
+(0029,0011)	LO	PrivateCreatorID	SIEMENS MEDCOM HEADER2
+(0029,0012)	LO	PrivateCreatorID	SIEMENS CSA REPORT
+(0029,1008)	CS	PrivateTag	MR
+(0029,1009)	LO	PrivateTag	20250124
+(0029,1010)	OB	PrivateTag	binary data
+(0029,1018)	CS	PrivateTag	MR
+(0029,1019)	LO	PrivateTag	20250124
+(0029,1020)	OB	PrivateTag	binary data
+(0029,1160)	LO	PrivateTag	com
+(0029,1208)	CS	PrivateTag	PHOENIXZIP
+(0029,1209)	LO	PrivateTag	1.0
+(0029,1215)	US	PrivateTag	1
+(0029,1217)	UI	PrivateTag	1.3.12.2.1107.5.2.18.142044.30000025012404373041200000378
+(0040,0244)	DA	PerformedProcedureStepStartDate	20250124
+(0040,0245)	TM	PerformedProcedureStepStartTime	152443.735000
+(0040,0253)	SH	PerformedProcedureStepID	MR20250124152443
+(0040,0254)	LO	PerformedProcedureStepDescription	Head^BRAIN
+(0040,0260)	SQ	PerformedProtocolCodeSequence	1 item
+--> ITEM #1			
+-->(0008,0100)	SH	CodeValue	PP-20
+-->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+-->(0008,0103)	SH	CodingSchemeVersion	1.0
+-->(0008,0104)	LO	CodeMeaning	Phoenix Document
+(0040,A040)	CS	ValueType	CONTAINER
+(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+--> ITEM #1			
+-->(0008,0100)	SH	CodeValue	A-10
+-->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+-->(0008,0104)	LO	CodeMeaning	Phoenix ZIP Acquisition Report
+(0040,A050)	CS	ContinuityOfContent	SEPARATE
+(0040,A372)	SQ	PerformedProcedureCodeSequence	
+(0040,A491)	CS	CompletionFlag	PARTIAL
+(0040,A493)	CS	VerificationFlag	UNVERIFIED
+(0040,A504)	SQ	ContentTemplateSequence	1 item
+--> ITEM #1			
+-->(0008,0105)	CS	MappingResource	99SMS_CTMR
+-->(0040,DB00)	CS	TemplateIdentifier	99_3000
+(0040,A730)	SQ	ContentSequence	6 items
+--> ITEM #1			
+-->(0040,A010)	CS	RelationshipType	HAS CONCEPT MOD
+-->(0040,A040)	CS	ValueType	CODE
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	113011
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Document Title Modifier
+-->(0040,A168)	SQ	ConceptCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	MR-20
+---->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---->(0008,0104)	LO	CodeMeaning	Phoenix ZIP Document
+--> ITEM #2			
+-->(0040,A010)	CS	RelationshipType	HAS CONCEPT MOD
+-->(0040,A040)	CS	ValueType	CODE
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121049
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Language of Content Item and Descendents
+-->(0040,A168)	SQ	ConceptCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	eng
+---->(0008,0102)	SH	CodingSchemeDesignator	ISO639_2
+---->(0008,0104)	LO	CodeMeaning	English
+--> ITEM #3			
+-->(0040,A010)	CS	RelationshipType	HAS OBS CONTEXT
+-->(0040,A040)	CS	ValueType	CODE
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121005
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Observer Type
+-->(0040,A168)	SQ	ConceptCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121006
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Person
+--> ITEM #4			
+-->(0040,A010)	CS	RelationshipType	HAS OBS CONTEXT
+-->(0040,A040)	CS	ValueType	PNAME
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121008
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Observer Name
+-->(0040,A123)	PN	PersonName	n.a.
+--> ITEM #5			
+-->(0040,A010)	CS	RelationshipType	CONTAINS
+-->(0040,A040)	CS	ValueType	CONTAINER
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121064
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Current Procedure Description
+-->(0040,A050)	CS	ContinuityOfContent	SEPARATE
+-->(0040,A730)	SQ	ContentSequence	3 items
+----> ITEM #1			
+---->(0040,A010)	CS	RelationshipType	CONTAINS
+---->(0040,A040)	CS	ValueType	CODE
+---->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+------> ITEM #1			
+------>(0008,0100)	SH	CodeValue	111004
+------>(0008,0102)	SH	CodingSchemeDesignator	DCM
+------>(0008,0104)	LO	CodeMeaning	Modality
+---->(0040,A168)	SQ	ConceptCodeSequence	1 item
+------> ITEM #1			
+------>(0008,0100)	SH	CodeValue	MR
+------>(0008,0102)	SH	CodingSchemeDesignator	DCM
+------>(0008,0104)	LO	CodeMeaning	Magnetic Resonanz
+----> ITEM #2			
+---->(0040,A010)	CS	RelationshipType	CONTAINS
+---->(0040,A040)	CS	ValueType	TEXT
+---->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+------> ITEM #1			
+------>(0008,0100)	SH	CodeValue	113016
+------>(0008,0102)	SH	CodingSchemeDesignator	DCM
+------>(0008,0104)	LO	CodeMeaning	Performed Procedure Step
+---->(0040,A160)	UT	TextValue	n.a.
+----> ITEM #3			
+---->(0040,A010)	CS	RelationshipType	CONTAINS
+---->(0040,A040)	CS	ValueType	CONTAINER
+---->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+------> ITEM #1			
+------>(0008,0100)	SH	CodeValue	125203
+------>(0008,0102)	SH	CodingSchemeDesignator	DCM
+------>(0008,0104)	LO	CodeMeaning	Acquisition Protocol
+---->(0040,A050)	CS	ContinuityOfContent	SEPARATE
+---->(0040,A730)	SQ	ContentSequence	2 items
+------> ITEM #1			
+------>(0040,A010)	CS	RelationshipType	CONTAINS
+------>(0040,A040)	CS	ValueType	CONTAINER
+------>(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+--------> ITEM #1			
+-------->(0008,0100)	SH	CodeValue	A-30
+-------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+-------->(0008,0103)	SH	CodingSchemeVersion	1.0
+-------->(0008,0104)	LO	CodeMeaning	Protocol Header
+-------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+------>(0040,A050)	CS	ContinuityOfContent	SEPARATE
+------>(0040,A730)	SQ	ContentSequence	22 items
+--------> ITEM #1			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-92
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	System Type
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	Aera
+--------> ITEM #2			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-90
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Software Version
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	syngo MR E11
+--------> ITEM #3			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-84
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Field Strength
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	1.494
+--------> ITEM #4			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-86
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Protocol Name
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	SAG-T2
+--------> ITEM #5			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-88
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Sequence Name
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	haste
+--------> ITEM #6			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-80
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Acquisition Time
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	00:00:27
+--------> ITEM #7			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-98
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Orientation
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	150
+--------> ITEM #8			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-100
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Resolution Matrix
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	256x240
+--------> ITEM #9			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-76
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Number of Slices
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	1
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	unary, no units
+---------->(0040,A30A)	DS	NumericValue	25
+--------> ITEM #10			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-78
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	FoV Read
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	mm
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	millimeter
+---------->(0040,A30A)	DS	NumericValue	230
+--------> ITEM #11			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-70
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	FoV Phase
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	%
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	percent
+---------->(0040,A30A)	DS	NumericValue	93.8
+--------> ITEM #12			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-94
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Slice Thickness
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	mm
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	millimeter
+---------->(0040,A30A)	DS	NumericValue	5
+--------> ITEM #13			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-96
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Slice Gap
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	%
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	percent
+---------->(0040,A30A)	DS	NumericValue	30
+--------> ITEM #14			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-74
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Repetition Time
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	msec
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	milliseconds
+---------->(0040,A30A)	DS	NumericValue	1000
+--------> ITEM #15			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-72
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Echo Time
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	msec
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	milliseconds
+---------->(0040,A30A)	DS	NumericValue	78
+--------> ITEM #16			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	NUM
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-82
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Flip Angle
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A300)	SQ	MeasuredValueSequence	1 item
+----------> ITEM #1			
+---------->(0040,08EA)	SQ	MeasurementUnitsCodeSequence	1 item
+------------> ITEM #1			
+------------>(0008,0100)	SH	CodeValue	deg
+------------>(0008,0102)	SH	CodingSchemeDesignator	UCUM
+------------>(0008,0104)	LO	CodeMeaning	degree
+---------->(0040,A30A)	DS	NumericValue	150
+--------> ITEM #17			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-102
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Fat Suppression
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	35
+--------> ITEM #18			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-104
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Flow Compensation
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	301
+--------> ITEM #19			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-106
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Water Suppression
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	39
+--------> ITEM #20			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-108
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Subtraction
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	False
+--------> ITEM #21			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-110
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	First Signal Mode
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	236
+--------> ITEM #22			
+-------->(0040,A010)	CS	RelationshipType	CONTAINS
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	A-112
+---------->(0008,0102)	SH	CodingSchemeDesignator	99SMS_CTMR
+---------->(0008,0103)	SH	CodingSchemeVersion	1.0
+---------->(0008,0104)	LO	CodeMeaning	Contrast Agent
+---------->(0008,010C)	UI	CodingSchemeUID	1.3.12.2.1107.5.2
+-------->(0040,A160)	UT	TextValue	n.a.
+------> ITEM #2			
+------>(0040,A010)	CS	RelationshipType	CONTAINS
+------>(0040,A040)	CS	ValueType	CONTAINER
+------>(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+--------> ITEM #1			
+-------->(0008,0100)	SH	CodeValue	121138
+-------->(0008,0102)	SH	CodingSchemeDesignator	DCM
+-------->(0008,0104)	LO	CodeMeaning	Image Acquired
+------>(0040,A050)	CS	ContinuityOfContent	SEPARATE
+------>(0040,A730)	SQ	ContentSequence	1 item
+--------> ITEM #1			
+-------->(0040,A010)	CS	RelationshipType	HAS ACQ CONTEXT
+-------->(0040,A040)	CS	ValueType	TEXT
+-------->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----------> ITEM #1			
+---------->(0008,0100)	SH	CodeValue	121141
+---------->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---------->(0008,0104)	LO	CodeMeaning	Image Type
+-------->(0040,A160)	UT	TextValue	n.a.
+--> ITEM #6			
+-->(0040,A010)	CS	RelationshipType	CONTAINS
+-->(0040,A040)	CS	ValueType	TEXT
+-->(0040,A043)	SQ	ConceptNameCodeSequence	1 item
+----> ITEM #1			
+---->(0008,0100)	SH	CodeValue	121106
+---->(0008,0102)	SH	CodingSchemeDesignator	DCM
+---->(0008,0104)	LO	CodeMeaning	Comment
+-->(0040,A160)	UT	TextValue	n.a.
