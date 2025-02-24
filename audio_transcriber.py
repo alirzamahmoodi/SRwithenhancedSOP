@@ -50,22 +50,20 @@ class AudioTranscriber:
             uploaded_file = genai.upload_file(audio_path)
             prompt = f"""You are a medical transcription assistant. Transcribe the following medical dictation into a structured report in English. Follow these guidelines:
 
-1. **Structure**: Organize the report into the following sections:
-    - **Reading**: Detailed findings from the study.
-    - **Conclusion**: Summary of the findings and their implications.
-    - **Recommendation**: Suggested next steps or actions.
+1. **Structure**: Organize the report into ONE paragraph of sentences of plain text.
 
 2. **Language**: Ensure the entire report is in English, even if parts of the dictation are in Persian.
 
-3. **Patient Information**: Do not include any private patient information (e.g., name, ID, birth date) in the report. This will be added separately.
+3. **Patient Information**: Crucially, Exclude and remove any private patient information (e.g., name, ) in the report, but you are free to mention their age or history.
 
 4. **Tone**: Use a formal and professional tone suitable for a medical report. Write consistent paragraphs and avoid bullet points or lists.
 
-5. **No Introductory Phrases**:  **Crucially, DO NOT include any introductory or conversational phrases at the beginning of the report.**  Specifically, **absolutely avoid phrases like "Here's a medical report dictation:", "Okay, here is the report:", or any similar preamble.**  The report should start immediately with the "Reading" section.
+5. **No Introductory Phrases**:  **Crucially, DO NOT include any introductory or conversational phrases at the beginning of the report.**  Specifically, **absolutely avoid phrases like "Here's a medical report dictation:", "Okay, here is the report:", or any similar preamble.**  The report should start immediately with the transcript.
 
 6. **Accuracy**: Ensure the transcription is accurate and free of errors.
 
-7. **Repetition**: Omit any repeated words or phrases."""
+7. **Repetition**: Omit any repeated words or phrases and remove any unnecessary data and conversations between physician and transcription operator.
+"""
             response = self.model.generate_content(
                 [uploaded_file, prompt],
                 generation_config=genai.GenerationConfig(
@@ -110,7 +108,7 @@ class AudioTranscriber:
         sr_ds.Modality = 'SR'
         sr_ds.ContentDate = datetime.now().strftime('%Y%m%d')
         sr_ds.ContentTime = datetime.now().strftime('%H%M%S')
-        sr_ds.SeriesDescription = 'Transcription Report'
+        sr_ds.SeriesDescription = 'Dictation Transcription'
         sr_ds.SeriesInstanceUID = pydicom.uid.generate_uid()
         sr_ds.SeriesNumber = 1
         sr_ds.InstanceNumber = 1
@@ -126,50 +124,22 @@ class AudioTranscriber:
         doc_title = Dataset()
         doc_title.CodeValue = "18748-4"  # LOINC code for a transcription report
         doc_title.CodingSchemeDesignator = "LN"
-        doc_title.CodeMeaning = "Transcription Report"
+        doc_title.CodeMeaning = "AI-Generated Dictation Transcription"
         sr_ds[(0x0040, 0xA043)].value.append(doc_title)
 
         # **Fix: Correctly Parse and Structure the Report**
-        pattern = r"(Reading:.*?)(?=Conclusion:|Recommendation:|$)|" + \
-                r"(Conclusion:.*?)(?=Reading:|Recommendation:|$)|" + \
-                r"(Recommendation:.*?)(?=Reading:|Conclusion:|$)"
-        matches = re.findall(pattern, report_text, re.DOTALL)
-
         content_items = []
-        for match in matches:
-            section_text = next(item for item in match if item)
-            if section_text.startswith("Reading:"):
-                code_value, code_meaning = "R-10226", "Reading"
-            elif section_text.startswith("Conclusion:"):
-                code_value, code_meaning = "R-10242", "Conclusion"
-            elif section_text.startswith("Recommendation:"):
-                code_value, code_meaning = "R-10266", "Recommendation"
-            else:
-                code_value, code_meaning = "0000", "Unknown"
 
-            text_value = section_text.split(":", 1)[1].strip() if ":" in section_text else section_text.strip()
 
-            item = Dataset()
-            item.ValueType = "TEXT"
-            concept_code = Dataset()
-            concept_code.CodeValue = code_value
-            concept_code.CodingSchemeDesignator = "DCM"
-            concept_code.CodeMeaning = code_meaning
-            item.ConceptNameCodeSequence = [concept_code]
-            item.TextValue = text_value
-            content_items.append(item)
-
-        # Fallback: If no sections were matched, add the entire transcription as "Reading"
-        if not content_items:
-            item = Dataset()
-            item.ValueType = "TEXT"
-            concept_code = Dataset()
-            concept_code.CodeValue = "R-10226"
-            concept_code.CodingSchemeDesignator = "DCM"
-            concept_code.CodeMeaning = "Reading"
-            item.ConceptNameCodeSequence = [concept_code]
-            item.TextValue = report_text.strip()
-            content_items.append(item)
+        item = Dataset()
+        item.ValueType = "TEXT"
+        concept_code = Dataset()
+        concept_code.CodeValue = "R-10226"
+        concept_code.CodingSchemeDesignator = "DCM"
+        concept_code.CodeMeaning = "Reading"
+        item.ConceptNameCodeSequence = [concept_code]
+        item.TextValue = report_text.strip()
+        content_items.append(item)
 
         # **✅ Fix: Ensure Root Container is Well-Formed**
         root_container = Dataset()
@@ -179,7 +149,7 @@ class AudioTranscriber:
         doc_title_sequence = Dataset()
         doc_title_sequence.CodeValue = "18748-4"
         doc_title_sequence.CodingSchemeDesignator = "LN"
-        doc_title_sequence.CodeMeaning = "Transcription Report"
+        doc_title_sequence.CodeMeaning = " "
         root_container.ConceptNameCodeSequence = [doc_title_sequence]
 
         # **Ensure ContentSequence Exists**
