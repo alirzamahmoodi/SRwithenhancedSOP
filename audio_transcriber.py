@@ -82,29 +82,31 @@ class AudioTranscriber:
             return None
 
     def encapsulate_text_as_enhanced_sr(self, report_text, original_dcm_path):
-        # Read original DICOM to retrieve patient/study info
         ds = pydicom.dcmread(original_dcm_path)
+
+        # **✅ File Meta Information**
         file_meta = Dataset()
-        file_meta.MediaStorageSOPClassUID = '1.2.840.10008.5.1.4.1.1.88.22'
+        file_meta.MediaStorageSOPClassUID = pydicom.uid.UID("1.2.840.10008.5.1.4.1.1.88.22")  # Enhanced SR
         file_meta.MediaStorageSOPInstanceUID = pydicom.uid.generate_uid()
         file_meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian
 
+        # ✅ **Fix Missing File Meta Information Group Length**
+        file_meta.FileMetaInformationGroupLength = 204
+
+        # **Create SR Dataset**
         sr_filename = original_dcm_path.replace(".dcm", "_SR.dcm")
         sr_ds = FileDataset(sr_filename, {}, file_meta=file_meta, preamble=b"\0" * 128)
 
-        # Copy patient and study information from the original DICOM
+        # **Copy Patient & Study Info**
         sr_ds.PatientID = ds.PatientID
         sr_ds.PatientName = ds.PatientName
-        sr_ds.PatientBirthDate = ds.PatientBirthDate
+        sr_ds.PatientBirthDate = ds.get('PatientBirthDate', '')
         sr_ds.PatientSex = ds.get('PatientSex', 'U')
         sr_ds.StudyDate = ds.StudyDate
         sr_ds.StudyTime = ds.StudyTime
-        if hasattr(ds, 'StudyInstanceUID') and ds.StudyInstanceUID:
-            sr_ds.StudyInstanceUID = ds.StudyInstanceUID
-        else:
-            sr_ds.StudyInstanceUID = pydicom.uid.generate_uid()
+        sr_ds.StudyInstanceUID = ds.get('StudyInstanceUID', pydicom.uid.generate_uid())
 
-        # Set required attributes for an Enhanced SR object
+        # **Required SR Attributes**
         sr_ds.SOPClassUID = file_meta.MediaStorageSOPClassUID
         sr_ds.SOPInstanceUID = file_meta.MediaStorageSOPInstanceUID
         sr_ds.Modality = 'SR'
@@ -114,74 +116,106 @@ class AudioTranscriber:
         sr_ds.SeriesInstanceUID = pydicom.uid.generate_uid()
         sr_ds.SeriesNumber = 1
         sr_ds.InstanceNumber = 1
-        # Add Document Title (Tag 0040,A043)
-        sr_ds.add_new((0x0040, 0xA043), 'LO', 'Transcription Report')
         sr_ds.CompletionFlag = "COMPLETE"
         sr_ds.VerificationFlag = "UNVERIFIED"
 
-        # Parse the report text into sections using regex.
-        # Expecting sections that begin with "Reading:", "Conclusion:" and "Recommendation:"
-        pattern = r"(Reading:.*?)(?=Conclusion:|Recommendation:|$)|" + \
-                r"(Conclusion:.*?)(?=Reading:|Recommendation:|$)|" + \
-                r"(Recommendation:.*?)(?=Reading:|Conclusion:|$)"
-        matches = re.findall(pattern, report_text, re.DOTALL)
+        # **✅ Fix Instance Creation Date/Time**
+        sr_ds.InstanceCreationDate = sr_ds.ContentDate  # Must be DA format
+        sr_ds.InstanceCreationTime = sr_ds.ContentTime  # Must be TM format
 
-        content_items = []
-        for match in matches:
-            section_text = next(item for item in match if item)
-            if section_text.startswith("Reading:"):
-                code_value = "R-10226"  # Example code for Reading
-                code_meaning = "Reading"
-            elif section_text.startswith("Conclusion:"):
-                code_value = "R-10242"  # Example code for Conclusion
-                code_meaning = "Conclusion"
-            elif section_text.startswith("Recommendation:"):
-                code_value = "R-10266"  # Example code for Recommendation
-                code_meaning = "Recommendation"
-            else:
-                code_value = "0000"
-                code_meaning = "Unknown"
-            # Remove the section label
-            text_value = section_text.split(":", 1)[1].strip() if ":" in section_text else section_text.strip()
-
-            item = Dataset()
-            item.ValueType = "TEXT"
-            concept_code = Dataset()
-            concept_code.CodeValue = code_value
-            concept_code.CodingSchemeDesignator = "DCM"
-            concept_code.CodeMeaning = code_meaning
-            item.ConceptNameCodeSequence = [concept_code]
-            item.TextValue = text_value
-            content_items.append(item)
-
-        # If no sections were found, store the entire report as one text node.
-        if not content_items:
-            item = Dataset()
-            item.ValueType = "TEXT"
-            concept_code = Dataset()
-            concept_code.CodeValue = "111111"
-            concept_code.CodingSchemeDesignator = "DCM"
-            concept_code.CodeMeaning = "Report"
-            item.ConceptNameCodeSequence = [concept_code]
-            item.TextValue = report_text.strip()
-            content_items.append(item)
-
-        # Create a root container item for the document.
-        root_container = Dataset()
-        root_container.ValueType = "CONTAINER"
-        # Set the document title in the root container.
+        # **Fix: Properly Add Document Title**
+        sr_ds.add_new((0x0040, 0xA043), 'SQ', [])  # Concept Name Code Sequence
         doc_title = Dataset()
-        doc_title.CodeValue = "18748-4"  # Example LOINC code for a generic report title; adjust if needed.
+        doc_title.CodeValue = "18748-4"  # LOINC code for a transcription report
         doc_title.CodingSchemeDesignator = "LN"
         doc_title.CodeMeaning = "Transcription Report"
-        root_container.ConceptNameCodeSequence = [doc_title]
-        # The container holds the actual content items as its children.
+        sr_ds[(0x0040, 0xA043)].value.append(doc_title)
+
+        # **Revised Parsing and Structuring of the Transcription Content with Unified Style**
+        import re
+
+        # Define regex pattern to capture the three sections using groups.
+        pattern = (
+            r"(Reading:.*?)(?=(Conclusion:|Recommendation:|$))|"
+            r"(Conclusion:.*?)(?=(Reading:|Recommendation:|$))|"
+            r"(Recommendation:.*?)(?=(Reading:|Conclusion:|$))"
+        )
+
+        content_items = []
+        # Use finditer for explicit iteration over matches.
+        for match in re.finditer(pattern, report_text, re.DOTALL):
+            # Extract the matched section text from the appropriate group.
+            section_text = match.group(1) or match.group(3) or match.group(5)
+            if section_text:
+                # Extract the header and content.
+                if ":" in section_text:
+                    header, body = section_text.split(":", 1)
+                    header = header.strip().upper()  # Normalize header in uppercase.
+                    body = body.strip()
+                else:
+                    header = "UNKNOWN"
+                    body = section_text.strip()
+
+                # Determine the codes based on the section heading.
+                if header.upper() == "READING":
+                    code_value, code_meaning = "R-10226", "Reading"
+                elif header.upper() == "CONCLUSION":
+                    code_value, code_meaning = "R-10242", "Conclusion"
+                elif header.upper() == "RECOMMENDATION":
+                    code_value, code_meaning = "R-10266", "Recommendation"
+                else:
+                    code_value, code_meaning = "0000", "Unknown"
+
+                # Assemble the formatted text.
+                formatted_text = f"{header}:\n    {body}"
+
+                # Create and populate the dataset for this section.
+                item = Dataset()
+                item.ValueType = "TEXT"
+                concept_code = Dataset()
+                concept_code.CodeValue = code_value
+                concept_code.CodingSchemeDesignator = "DCM"
+                concept_code.CodeMeaning = code_meaning
+                item.ConceptNameCodeSequence = [concept_code]
+                item.TextValue = formatted_text
+                content_items.append(item)
+
+        # Fallback if no sections were matched.
+        if not content_items:
+            formatted_text = f"READING:\n    {report_text.strip()}"
+            item = Dataset()
+            item.ValueType = "TEXT"
+            concept_code = Dataset()
+            concept_code.CodeValue = "R-10226"
+            concept_code.CodingSchemeDesignator = "DCM"
+            concept_code.CodeMeaning = "Reading"
+            item.ConceptNameCodeSequence = [concept_code]
+            item.TextValue = formatted_text
+            content_items.append(item)
+
+        # **✅ Fix: Ensure Root Container is Well-Formed**
+        root_container = Dataset()
+        root_container.ValueType = "CONTAINER"
+        root_container.ContinuityOfContent = "SEPARATE"
+
+        doc_title_sequence = Dataset()
+        doc_title_sequence.CodeValue = "18748-4"
+        doc_title_sequence.CodingSchemeDesignator = "LN"
+        doc_title_sequence.CodeMeaning = "Test 2 Transcription Report"
+        root_container.ConceptNameCodeSequence = [doc_title_sequence]
+
+        # **Ensure ContentSequence Exists**
         root_container.ContentSequence = content_items
 
-        # Wrap the root container into the SR's ContentSequence.
+        # Assign root container to SR dataset
         sr_ds.ContentSequence = [root_container]
 
-        sr_ds.save_as(sr_filename)
+        # **✅ Ensure File Meta Information is Saved Properly**
+        sr_ds.is_little_endian = True
+        sr_ds.is_implicit_VR = False
+
+        # Save file
+        sr_ds.save_as(sr_filename, write_like_original=False)
         return sr_filename
 
 

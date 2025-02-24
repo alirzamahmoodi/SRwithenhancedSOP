@@ -1,0 +1,513 @@
+========================================
+File: 1.3.12.2.1107.5.2.18.142044.30000025012404373041200000375_2248.dcm
+Modality: SR
+Dataset structure:
+(0008, 0005) Specific Character Set: ISO_IR 100
+(0008, 0008) Image Type: ['ORIGINAL', 'PRIMARY', 'OTHER', 'CSA REPORT']
+(0008, 0016) SOP Class UID: 1.2.840.10008.5.1.4.1.1.88.22
+(0008, 0018) SOP Instance UID: 1.3.12.2.1107.5.2.18.142044.30000025012404373041200000375
+(0008, 0020) Study Date: 20250124
+(0008, 0021) Series Date: 20250124
+(0008, 0023) Content Date: 20250124
+(0008, 0030) Study Time: 152443
+(0008, 0031) Series Time: 153325.028000
+(0008, 0033) Content Time: 153158.628000
+(0008, 0050) Accession Number: 
+(0008, 0060) Modality: SR
+(0008, 0070) Manufacturer: SIEMENS
+(0008, 0080) Institution Name: 
+(0008, 0081) Institution Address: 
+(0008, 0090) Referring Physician's Name: 
+(0008, 1010) Station Name: AWP142044
+(0008, 1030) Study Description: 
+(0008, 103e) Series Description: PhoenixZIPReport
+(0008, 1040) Institutional Department Name: 
+(0008, 1090) Manufacturer's Model Name: Aera
+(0008, 1111) Referenced Performed Procedure Step Sequence - Sequence (0 items)
+(0010, 0010) Patient's Name: RASOUL ZADEH^ZAHRA
+(0010, 0020) Patient ID: 1260408116
+(0010, 0030) Patient's Birth Date: 19680124
+(0010, 0040) Patient's Sex: F
+(0010, 1010) Patient's Age: 057Y
+(0010, 1020) Patient's Size: 1.7
+(0010, 1030) Patient's Weight: 90
+(0018, 1020) Software Versions: syngo MR E11
+(0018, 1030) Protocol Name: Phoenix Document
+(0018, 1200) Date of Last Calibration: 
+(0018, 1201) Time of Last Calibration: 
+(0020, 000d) Study Instance UID: 1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043
+(0020, 000e) Series Instance UID: 1.3.12.2.1107.5.2.18.142044.30000025012404373041200000366
+(0020, 0010) Study ID: 1
+(0020, 0011) Series Number: 99
+(0020, 0013) Instance Number: 5
+(0028, 0006) Planar Configuration: 0
+(0028, 0103) Pixel Representation: 0
+(0029, 0010) Private Creator: SIEMENS CSA HEADER
+(0029, 0011) Private Creator: SIEMENS MEDCOM HEADER2
+(0029, 0012) Private Creator: SIEMENS CSA REPORT
+(0029, 1008) [CSA Image Header Type]: MR
+(0029, 1009) [CSA Image Header Version]: 20250124
+(0029, 1010) [CSA Image Header Info]: <193976 bytes of binary data>
+(0029, 1018) [CSA Series Header Type]: MR
+(0029, 1019) [CSA Series Header Version]: 20250124
+(0029, 1020) [CSA Series Header Info]: <6760 bytes of binary data>
+(0029, 1160) [Series Workflow Status]: com
+(0029, 1208) [syngo Report Type]: PHOENIXZIP
+(0029, 1209) [syngo Report]: 1.0
+(0029, 1215) [SR Variant]: 1
+(0029, 1217) [SC SOP Instance UID]: 1.3.12.2.1107.5.2.18.142044.30000025012404373041200000374
+(0040, 0244) Performed Procedure Step Start Date: 20250124
+(0040, 0245) Performed Procedure Step Start Time: 152443.735000
+(0040, 0253) Performed Procedure Step ID: MR20250124152443
+(0040, 0254) Performed Procedure Step Description: Head^BRAIN
+(0040, 0260) Performed Protocol Code Sequence - Sequence (1 items)
+  Item 1:
+        (0008, 0100) Code Value: PP-20
+        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+        (0008, 0103) Coding Scheme Version: 1.0
+        (0008, 0104) Code Meaning: Phoenix Document
+(0040, a040) Value Type: CONTAINER
+(0040, a043) Concept Name Code Sequence - Sequence (1 items)
+  Item 1:
+        (0008, 0100) Code Value: A-10
+        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+        (0008, 0104) Code Meaning: Phoenix ZIP Acquisition Report
+(0040, a050) Continuity Of Content: SEPARATE
+(0040, a372) Performed Procedure Code Sequence - Sequence (0 items)
+(0040, a491) Completion Flag: PARTIAL
+(0040, a493) Verification Flag: UNVERIFIED
+(0040, a504) Content Template Sequence - Sequence (1 items)
+  Item 1:
+        (0008, 0105) Mapping Resource: 99SMS_CTMR
+        (0040, db00) Template Identifier: 99_3000
+(0040, a730) Content Sequence - Sequence (6 items)
+  Item 1:
+        (0040, a010) Relationship Type: HAS CONCEPT MOD
+        (0040, a040) Value Type: CODE
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 113011
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Document Title Modifier
+        (0040, a168) Concept Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: MR-20
+                (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                (0008, 0104) Code Meaning: Phoenix ZIP Document
+  Item 2:
+        (0040, a010) Relationship Type: HAS CONCEPT MOD
+        (0040, a040) Value Type: CODE
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121049
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Language of Content Item and Descendents
+        (0040, a168) Concept Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: eng
+                (0008, 0102) Coding Scheme Designator: ISO639_2
+                (0008, 0104) Code Meaning: English
+  Item 3:
+        (0040, a010) Relationship Type: HAS OBS CONTEXT
+        (0040, a040) Value Type: CODE
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121005
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Observer Type
+        (0040, a168) Concept Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121006
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Person
+  Item 4:
+        (0040, a010) Relationship Type: HAS OBS CONTEXT
+        (0040, a040) Value Type: PNAME
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121008
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Observer Name
+        (0040, a123) Person Name: n.a.
+  Item 5:
+        (0040, a010) Relationship Type: CONTAINS
+        (0040, a040) Value Type: CONTAINER
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121064
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Current Procedure Description
+        (0040, a050) Continuity Of Content: SEPARATE
+        (0040, a730) Content Sequence - Sequence (3 items)
+          Item 1:
+                (0040, a010) Relationship Type: CONTAINS
+                (0040, a040) Value Type: CODE
+                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                  Item 1:
+                        (0008, 0100) Code Value: 111004
+                        (0008, 0102) Coding Scheme Designator: DCM
+                        (0008, 0104) Code Meaning: Modality
+                (0040, a168) Concept Code Sequence - Sequence (1 items)
+                  Item 1:
+                        (0008, 0100) Code Value: MR
+                        (0008, 0102) Coding Scheme Designator: DCM
+                        (0008, 0104) Code Meaning: Magnetic Resonanz
+          Item 2:
+                (0040, a010) Relationship Type: CONTAINS
+                (0040, a040) Value Type: TEXT
+                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                  Item 1:
+                        (0008, 0100) Code Value: 113016
+                        (0008, 0102) Coding Scheme Designator: DCM
+                        (0008, 0104) Code Meaning: Performed Procedure Step
+                (0040, a160) Text Value: n.a.
+          Item 3:
+                (0040, a010) Relationship Type: CONTAINS
+                (0040, a040) Value Type: CONTAINER
+                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                  Item 1:
+                        (0008, 0100) Code Value: 125203
+                        (0008, 0102) Coding Scheme Designator: DCM
+                        (0008, 0104) Code Meaning: Acquisition Protocol
+                (0040, a050) Continuity Of Content: SEPARATE
+                (0040, a730) Content Sequence - Sequence (2 items)
+                  Item 1:
+                        (0040, a010) Relationship Type: CONTAINS
+                        (0040, a040) Value Type: CONTAINER
+                        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                          Item 1:
+                                (0008, 0100) Code Value: A-30
+                                (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                (0008, 0103) Coding Scheme Version: 1.0
+                                (0008, 0104) Code Meaning: Protocol Header
+                                (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                        (0040, a050) Continuity Of Content: SEPARATE
+                        (0040, a730) Content Sequence - Sequence (22 items)
+                          Item 1:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-92
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: System Type
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: Aera
+                          Item 2:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-90
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Software Version
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: syngo MR E11
+                          Item 3:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-84
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Field Strength
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 1.494
+                          Item 4:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-86
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Protocol Name
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: t2_tse_tra_512
+                          Item 5:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-88
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Sequence Name
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: tse
+                          Item 6:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-80
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Acquisition Time
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 00:00:37
+                          Item 7:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-98
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Orientation
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 157
+                          Item 8:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-100
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Resolution Matrix
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 256x157
+                          Item 9:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-76
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Number of Slices
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: 1
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: unary, no units
+                                        (0040, a30a) Numeric Value: 25
+                          Item 10:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-78
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: FoV Read
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: mm
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: millimeter
+                                        (0040, a30a) Numeric Value: 230
+                          Item 11:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-70
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: FoV Phase
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: %
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: percent
+                                        (0040, a30a) Numeric Value: 87.5
+                          Item 12:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-94
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Slice Thickness
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: mm
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: millimeter
+                                        (0040, a30a) Numeric Value: 5
+                          Item 13:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-96
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Slice Gap
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: %
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: percent
+                                        (0040, a30a) Numeric Value: 30
+                          Item 14:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-74
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Repetition Time
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: msec
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: milliseconds
+                                        (0040, a30a) Numeric Value: 5000
+                          Item 15:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-72
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Echo Time
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: msec
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: milliseconds
+                                        (0040, a30a) Numeric Value: 92
+                          Item 16:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: NUM
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-82
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Flip Angle
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a300) Measured Value Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0040, 08ea) Measurement Units Code Sequence - Sequence (1 items)
+                                          Item 1:
+                                                (0008, 0100) Code Value: deg
+                                                (0008, 0102) Coding Scheme Designator: UCUM
+                                                (0008, 0104) Code Meaning: degree
+                                        (0040, a30a) Numeric Value: 150
+                          Item 17:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-102
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Fat Suppression
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 35
+                          Item 18:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-104
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Flow Compensation
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 301
+                          Item 19:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-106
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Water Suppression
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 39
+                          Item 20:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-108
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Subtraction
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: False
+                          Item 21:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-110
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: First Signal Mode
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: 236
+                          Item 22:
+                                (0040, a010) Relationship Type: CONTAINS
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: A-112
+                                        (0008, 0102) Coding Scheme Designator: 99SMS_CTMR
+                                        (0008, 0103) Coding Scheme Version: 1.0
+                                        (0008, 0104) Code Meaning: Contrast Agent
+                                        (0008, 010c) Coding Scheme UID: 1.3.12.2.1107.5.2
+                                (0040, a160) Text Value: n.a.
+                  Item 2:
+                        (0040, a010) Relationship Type: CONTAINS
+                        (0040, a040) Value Type: CONTAINER
+                        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                          Item 1:
+                                (0008, 0100) Code Value: 121138
+                                (0008, 0102) Coding Scheme Designator: DCM
+                                (0008, 0104) Code Meaning: Image Acquired
+                        (0040, a050) Continuity Of Content: SEPARATE
+                        (0040, a730) Content Sequence - Sequence (1 items)
+                          Item 1:
+                                (0040, a010) Relationship Type: HAS ACQ CONTEXT
+                                (0040, a040) Value Type: TEXT
+                                (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+                                  Item 1:
+                                        (0008, 0100) Code Value: 121141
+                                        (0008, 0102) Coding Scheme Designator: DCM
+                                        (0008, 0104) Code Meaning: Image Type
+                                (0040, a160) Text Value: n.a.
+  Item 6:
+        (0040, a010) Relationship Type: CONTAINS
+        (0040, a040) Value Type: TEXT
+        (0040, a043) Concept Name Code Sequence - Sequence (1 items)
+          Item 1:
+                (0008, 0100) Code Value: 121106
+                (0008, 0102) Coding Scheme Designator: DCM
+                (0008, 0104) Code Meaning: Comment
+        (0040, a160) Text Value: n.a.
+========================================
+
