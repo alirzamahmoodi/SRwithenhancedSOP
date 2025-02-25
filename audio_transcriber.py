@@ -12,6 +12,7 @@ import pydicom.uid
 from pydicom.dataset import Dataset, FileDataset
 from datetime import datetime
 import re
+import time
 
 class Section(enum.Enum):
     HEADING = "heading"
@@ -30,12 +31,22 @@ class StructuredReport(TypedDict):
     Report: list[ReportSection]
 
 class AudioTranscriber:
-    def __init__(self, gemini_api_key):
+    def __init__(self, gemini_api_key, sr_output_folder):
         genai.configure(api_key=gemini_api_key)
         self.model = genai.GenerativeModel("gemini-2.0-flash")
+        self.sr_output_folder = sr_output_folder
 
     def extract_audio(self, dcm_path):
-        ds = pydicom.dcmread(dcm_path)
+        retries = 5
+        for attempt in range(retries):
+            try:
+                ds = pydicom.dcmread(dcm_path)
+                break  # If reading succeeds, exit the loop.
+            except PermissionError:
+                if attempt < retries - 1:
+                    time.sleep(1)  # Wait for 1 second before retrying.
+                else:
+                    raise PermissionError(f"Unable to access file: {dcm_path}")
         waveform = ds.WaveformSequence[0]
         audio_data = np.frombuffer(waveform.WaveformData, dtype=np.int16)
         wav_path = dcm_path.replace(".dcm", ".wav")
@@ -90,7 +101,9 @@ class AudioTranscriber:
         file_meta.FileMetaInformationGroupLength = 204
 
         # **Create SR Dataset**
-        sr_filename = original_dcm_path.replace(".dcm", "_SR.dcm")
+        basename = os.path.basename(original_dcm_path).replace(".dcm", "_SR.dcm")
+        sr_filename = os.path.join(self.sr_output_folder, basename)
+        os.makedirs(self.sr_output_folder, exist_ok=True)
         sr_ds = FileDataset(sr_filename, {}, file_meta=file_meta, preamble=b"\0" * 128)
 
         # **Copy Patient & Study Info**
@@ -169,8 +182,9 @@ class AudioTranscriber:
 
     def process_spool_folder(self, spool_folder, processed_folder):
         for filename in os.listdir(spool_folder):
-            if filename.endswith(".dcm") or '.' not in filename:
-                dcm_path = os.path.join(spool_folder, filename)
+            file_path = os.path.join(spool_folder, filename)
+            if os.path.isfile(file_path) and (filename.endswith(".dcm") or '.' not in filename):
+                dcm_path = file_path
                 audio_path = self.extract_audio(dcm_path)
                 report_text = self.transcribe(dcm_path, audio_path)
                 if report_text:
