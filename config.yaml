@@ -1,9 +1,4 @@
 # config.yaml
-AE_TITLE: "TRANSCRIPTOR"
-PACS_IP: "localhost"
-PACS_PORT: 104
-USERNAME: "persiangulfadmin"
-PASSWORD: "Raoufsoft1003"
 GEMINI_API_KEY: "AIzaSyCtch3XLoQtYSbQuAFiHhuluqrzWr88rH4"
 PRIMARY_SPOOL_FOLDER: "C:\\RaoufSoft\\Spool\\200" #You have to create a receiver service, to receive dictation DICOM objects.
 PROCESSED_SPOOL_FOLDER: "C:\\RaoufSoft\\Spool\\200\\Processed" #You have to create a register service to listen for processed dictation DICOM files here.

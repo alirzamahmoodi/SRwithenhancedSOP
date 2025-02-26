@@ -1,0 +1,5 @@
+# config.yaml
+GEMINI_API_KEY: "AIzaSyCtch3XLoQtYSbQuAFiHhuluqrzWr88rH4"
+PRIMARY_SPOOL_FOLDER: "C:\\RaoufSoft\\Spool\\200" #You have to create a receiver service, to receive dictation DICOM objects.
+PROCESSED_SPOOL_FOLDER: "C:\\RaoufSoft\\Spool\\200\\Processed" #You have to create a register service to listen for processed dictation DICOM files here.
+SR_OUTPUT_FOLDER: "C:\\RaoufSoft\\Spool\\200\\SR" #You have to create a register service to listen for DICOM SR files here.
