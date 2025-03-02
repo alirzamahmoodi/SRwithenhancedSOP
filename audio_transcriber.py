@@ -13,6 +13,12 @@ from pydicom.dataset import Dataset, FileDataset
 from datetime import datetime
 import re
 import time
+import yaml
+
+def load_config(config_path):
+    with open(config_path, 'r') as file:
+        return yaml.safe_load(file)
+config = load_config("config.yaml")
 
 class Section(enum.Enum):
     HEADING = "heading"
@@ -33,7 +39,7 @@ class StructuredReport(TypedDict):
 class AudioTranscriber:
     def __init__(self, gemini_api_key, sr_output_folder):
         genai.configure(api_key=gemini_api_key)
-        self.model = genai.GenerativeModel("gemini-2.0-flash")
+        self.model = genai.GenerativeModel(config["MODEL_NAME"])
         self.sr_output_folder = sr_output_folder
 
     def extract_audio(self, dcm_path):
