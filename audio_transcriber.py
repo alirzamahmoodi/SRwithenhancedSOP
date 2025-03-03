@@ -14,11 +14,21 @@ from datetime import datetime
 import re
 import time
 import yaml
+import cx_Oracle
+import logging
+from logger_config import setup_logging
+import sys
 
-def load_config(config_path):
+setup_logging()
+
+def load_config(config_filename):
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(__file__)
+    config_path = os.path.join(base_path, config_filename)
     with open(config_path, 'r') as file:
         return yaml.safe_load(file)
-config = load_config("config.yaml")
 
 class Section(enum.Enum):
     HEADING = "heading"
@@ -37,10 +47,10 @@ class StructuredReport(TypedDict):
     Report: list[ReportSection]
 
 class AudioTranscriber:
-    def __init__(self, gemini_api_key, sr_output_folder):
-        genai.configure(api_key=gemini_api_key)
+    def __init__(self, config):  # changed to accept config
+        genai.configure(api_key=config["GEMINI_API_KEY"])
         self.model = genai.GenerativeModel(config["MODEL_NAME"])
-        self.sr_output_folder = sr_output_folder
+        self.sr_output_folder = config["SR_OUTPUT_FOLDER"]
 
     def extract_audio(self, dcm_path):
         retries = 5
@@ -91,7 +101,7 @@ class AudioTranscriber:
             report_content = response.text.strip()
             return report_content
         except Exception as e:
-            print(f"Transcription failed: {str(e)}")
+            logging.error(f"Transcription failed: {str(e)}")
             return None
 
     def encapsulate_text_as_enhanced_sr(self, report_text, original_dcm_path):
@@ -185,6 +195,50 @@ class AudioTranscriber:
         sr_ds.save_as(sr_filename, write_like_original=False)
         return sr_filename
 
+    # New function to store the transcribed report in TREPORTTEXT table.
+    def store_transcribed_report(self, study_key, report_content):
+        from datetime import datetime
+        dsn = cx_Oracle.makedsn(config["ORACLE_HOST"], config["ORACLE_PORT"], config["ORACLE_SERVICE_NAME"])
+        try:
+            connection = cx_Oracle.connect(config["ORACLE_USERNAME"], config["ORACLE_PASSWORD"], dsn)
+            cursor = connection.cursor()
+            # Retrieve REPORT_KEY from TREPORT using the provided study_key.
+            cursor.execute(
+                "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key",
+                study_key=study_key
+            )
+            row = cursor.fetchone()
+            if not row:
+                logging.warning(f"No TREPORT record found for STUDY_KEY={study_key}")
+                return
+            report_key = row[0]
+            report_date = datetime.now().strftime('%Y%m%d%H%M%S')
+            insert_sql = """
+            INSERT INTO TREPORTTEXT 
+            (REPORT_KEY, REPORT_STAT, SRTEMPLATE_KEY, REPORTER_KEY, REPORT_DATE, REPORT_TYPE, REPORT_TEXT, CONCLUSION, FLAG, WFLAG)
+            VALUES 
+            (:report_key, :report_stat, :srtemplate_key, :reporter_key, :report_date, :report_type, :report_text, :conclusion, :flag, :wflag)
+            """
+            cursor.execute(
+                insert_sql,
+                report_key=report_key,
+                report_stat=4010,
+                srtemplate_key=None,
+                reporter_key=None,
+                report_date=report_date,
+                report_type="T",
+                report_text=report_content,
+                conclusion="",
+                flag="N",
+                wflag="N"
+            )
+            connection.commit()
+            logging.info("TREPORTTEXT record inserted successfully.")
+        except Exception as e:
+            logging.error(f"Failed to store transcribed report: {str(e)}")
+        finally:
+            cursor.close()
+            connection.close()
 
     def process_spool_folder(self, spool_folder, processed_folder):
         for filename in os.listdir(spool_folder):
@@ -195,7 +249,9 @@ class AudioTranscriber:
                 report_text = self.transcribe(dcm_path, audio_path)
                 if report_text:
                     sr_path = self.encapsulate_text_as_enhanced_sr(report_text, dcm_path)
-                    print(f"Enhanced SR saved to: {sr_path}")
+                    logging.info(f"Enhanced SR saved to: {sr_path}")
                     shutil.move(dcm_path, os.path.join(processed_folder, filename))
+                else:
+                    logging.warning(f"No transcription was generated for {filename}")
 
 # End of file
