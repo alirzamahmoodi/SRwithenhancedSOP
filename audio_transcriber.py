@@ -29,6 +29,7 @@ def load_config(config_filename):
     config_path = os.path.join(base_path, config_filename)
     with open(config_path, 'r') as file:
         return yaml.safe_load(file)
+config = load_config("config.yaml")
 
 class Section(enum.Enum):
     HEADING = "heading"
