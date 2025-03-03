@@ -10,7 +10,7 @@ dependencies:
       - librosa
       - pydicom
       - pynetdicom
-      - cx_Oracle
+      - cx_oracle
       - numpy
       - scipy
       - pyyaml
