@@ -3,7 +3,10 @@ import argparse
 import yaml
 import logging
 from query import process_study_key
-from audio_transcriber import AudioTranscriber
+from extract_audio import ExtractAudio
+from transcribe import Transcribe
+from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
+from store_transcribed_report import StoreTranscribedReport
 from logger_config import setup_logging
 
 def load_config(config_path):
@@ -24,14 +27,17 @@ def main():
         logging.error(f"Error processing study key: {err}")
         sys.exit(1)
 
-    transcriber = AudioTranscriber(config)  # pass config here
-    
-    audio_path = transcriber.extract_audio(final_path)
-    report_text = transcriber.transcribe(final_path, audio_path)
+    extract_audio = ExtractAudio(config)
+    transcribe = Transcribe(config)
+    encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
+    store_transcribed_report = StoreTranscribedReport(config)
+
+    audio_path = extract_audio.extract_audio(final_path)
+    report_text = transcribe.transcribe(final_path, audio_path)
     if report_text:
-        sr_path = transcriber.encapsulate_text_as_enhanced_sr(report_text, final_path)
+        sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_text, final_path)
         logging.info(f"Enhanced SR saved to: {sr_path}")
-        transcriber.store_transcribed_report(args.STUDY_KEY, report_text)
+        store_transcribed_report.store_transcribed_report(args.STUDY_KEY, report_text)
     else:
         logging.warning("No transcription was generated.")
 
