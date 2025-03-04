@@ -10,3 +10,7 @@ ORACLE_SERVICE_NAME: "persiangulf"
 ORACLE_USERNAME: "dodeulbyeol"
 ORACLE_PASSWORD: "tong1#pacs1011$"
 LONGTERM_PATH: "E:\\Longterm"
+LOGGING_LEVELS:
+  basic: "INFO"
+  detailed: "DEBUG"
+  error: "ERROR"

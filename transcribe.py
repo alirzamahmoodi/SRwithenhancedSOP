@@ -6,8 +6,10 @@ class Transcribe:
     def __init__(self, config):
         genai.configure(api_key=config["GEMINI_API_KEY"])
         self.model = genai.GenerativeModel(config["MODEL_NAME"])
+        self.logger = logging.getLogger('detailed')
 
     def transcribe(self, dcm_path, audio_path):
+        self.logger.info(f"Transcribing audio file: {audio_path} for DICOM file: {dcm_path}")
         try:
             # Read DICOM file to extract patient and study information if needed
             ds = pydicom.dcmread(dcm_path)
@@ -37,7 +39,8 @@ class Transcribe:
                 )
             )
             report_content = response.text.strip()
+            self.logger.info(f"Transcription completed for audio file: {audio_path}")
             return report_content
         except Exception as e:
-            logging.error(f"Transcription failed: {str(e)}")
+            self.logger.error(f"Transcription failed for audio file: {audio_path}, error: {str(e)}")
             return None
