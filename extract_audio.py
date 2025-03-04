@@ -15,6 +15,9 @@ class ExtractAudio:
         retries = 5
         for attempt in range(retries):
             try:
+                # Use the \\?\ prefix for long paths
+                if len(dcm_path) > 260:
+                    dcm_path = r"\\?\{}".format(dcm_path)
                 ds = pydicom.dcmread(dcm_path)
                 break  # If reading succeeds, exit the loop.
             except PermissionError:
