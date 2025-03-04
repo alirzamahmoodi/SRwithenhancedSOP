@@ -5,8 +5,10 @@ from datetime import datetime
 class StoreTranscribedReport:
     def __init__(self, config):
         self.config = config
+        self.logger = logging.getLogger('detailed')
 
     def store_transcribed_report(self, study_key, report_content):
+        self.logger.info(f"Storing transcribed report for study key: {study_key}")
         dsn = cx_Oracle.makedsn(self.config["ORACLE_HOST"], self.config["ORACLE_PORT"], self.config["ORACLE_SERVICE_NAME"])
         try:
             connection = cx_Oracle.connect(self.config["ORACLE_USERNAME"], self.config["ORACLE_PASSWORD"], dsn)
@@ -18,7 +20,7 @@ class StoreTranscribedReport:
             )
             row = cursor.fetchone()
             if not row:
-                logging.warning(f"No TREPORT record found for STUDY_KEY={study_key}")
+                self.logger.warning(f"No TREPORT record found for STUDY_KEY={study_key}")
                 return
             report_key, reporter_key = row
             report_date = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -63,9 +65,9 @@ class StoreTranscribedReport:
             )
             
             connection.commit()
-            logging.info("TREPORTTEXT record inserted and TREPORT updated successfully.")
+            self.logger.info("TREPORTTEXT record inserted and TREPORT updated successfully.")
         except Exception as e:
-            logging.error(f"Failed to store transcribed report: {str(e)}")
+            self.logger.error(f"Failed to store transcribed report: {str(e)}")
         finally:
             cursor.close()
             connection.close()

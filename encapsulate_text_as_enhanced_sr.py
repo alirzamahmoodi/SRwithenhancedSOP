@@ -2,12 +2,15 @@ import pydicom
 from pydicom.dataset import Dataset, FileDataset
 from datetime import datetime
 import os
+import logging
 
 class EncapsulateTextAsEnhancedSR:
     def __init__(self, config):
         self.sr_output_folder = config["SR_OUTPUT_FOLDER"]
+        self.logger = logging.getLogger('detailed')
 
     def encapsulate_text_as_enhanced_sr(self, report_text, original_dcm_path):
+        self.logger.info(f"Encapsulating text as Enhanced SR for DICOM file: {original_dcm_path}")
         ds = pydicom.dcmread(original_dcm_path)
 
         # **✅ File Meta Information**
@@ -95,4 +98,5 @@ class EncapsulateTextAsEnhancedSR:
 
         # Save file
         sr_ds.save_as(sr_filename, write_like_original=False)
+        self.logger.info(f"Enhanced SR saved to: {sr_filename}")
         return sr_filename
