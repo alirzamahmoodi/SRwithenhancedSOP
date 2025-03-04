@@ -10,12 +10,13 @@ hidden_imports = collect_submodules('cx_Oracle')
 block_cipher = None
 
 datas = [
-    ('config.yaml', '.')  # include config.yaml in the root of the bundle
+    ('config.yaml', '.'),  # include config.yaml in the root of the bundle
+    ('icon.ico', '.')  # include icon.ico in the root of the bundle
 ]
 
 a = Analysis(
     ['main.py'],
-    pathex=['d:\\SRwithenhancedSOP'],
+    pathex=['d:\SRwithenhancedSOP'],
     binaries=[],
     datas=datas,
     hiddenimports=hidden_imports,
