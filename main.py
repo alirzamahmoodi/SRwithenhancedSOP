@@ -2,17 +2,32 @@ import sys
 import argparse
 import yaml
 import logging
+import cx_Oracle
 from query import process_study_key
 from extract_audio import ExtractAudio
 from transcribe import Transcribe
 from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 from store_transcribed_report import StoreTranscribedReport
 from logger_config import setup_logging
+import os
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
         return yaml.safe_load(file)
 config = load_config("config.yaml")
+
+oracle_client_path = config.get("ORACLE_CLIENT_PATH")
+if oracle_client_path:
+    os.environ["ORACLE_CLIENT_PATH"] = oracle_client_path
+    try:
+        cx_Oracle.init_oracle_client(lib_dir=oracle_client_path)
+        logging.info("Connected to Oracle Client successfully.")
+    except cx_Oracle.DatabaseError as e:
+        logging.error(f"Failed to connect to Oracle database: {e}")
+        sys.exit(1)
+else:
+    logging.error("ORACLE_CLIENT_PATH not found in config.yaml")
+    sys.exit(1)
 
 def main():
     setup_logging()

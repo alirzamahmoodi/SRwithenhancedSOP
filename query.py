@@ -1,6 +1,7 @@
 import cx_Oracle
 import os
 import logging
+import sys
 from logger_config import setup_logging
 
 setup_logging()
@@ -8,21 +9,14 @@ setup_logging()
 
 def process_study_key(config, study_key):
     # Create DSN from individual config values if ORACLE_DSN is not provided.
-    if "ORACLE_DSN" in config:
-        dsn = config["ORACLE_DSN"]
-    else:
-        dsn = cx_Oracle.makedsn(
-            config["ORACLE_HOST"],
-            config["ORACLE_PORT"],
-            service_name=config["ORACLE_SERVICE_NAME"]
-        )
-    
-    connection = cx_Oracle.connect(
-        config["ORACLE_USERNAME"],
-        config["ORACLE_PASSWORD"],
-        dsn
-    )
-    
+    logging.info("Creating DSN for Oracle connection.")
+    dsn = cx_Oracle.makedsn(config["ORACLE_HOST"], config["ORACLE_PORT"], service_name=config["ORACLE_SERVICE_NAME"])
+    logging.info(f"DSN: {dsn}")
+
+    logging.info("Connecting to Oracle database.")
+    connection = cx_Oracle.connect(user=config["ORACLE_USERNAME"], password=config["ORACLE_PASSWORD"], dsn=dsn, encoding="UTF-8")
+
+    logging.info("Creating cursor for database operations.")
     cursor = connection.cursor()
     try:
         # Retrieve REPORT_KEY and REPORT_STAT for the given STUDY_KEY.
