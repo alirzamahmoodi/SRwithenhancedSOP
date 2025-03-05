@@ -4,7 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - python
-  - cx_oracle
+  - oracledb
   - pip
   - pip:
       - google-generativeai
@@ -13,8 +13,4 @@ dependencies:
       - pynetdicom
       - numpy
       - scipy
-      - pyyaml
-      - pytest
-      - pytest-mock
-      - pdfkit
       - watchdog
