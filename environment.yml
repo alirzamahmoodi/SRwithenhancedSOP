@@ -13,4 +13,7 @@ dependencies:
       - pynetdicom
       - numpy
       - scipy
+      - pyyaml
       - watchdog
+      - pyinstaller
+      - cryptography
