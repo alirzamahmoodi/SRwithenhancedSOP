@@ -48,11 +48,17 @@ def main():
     store_transcribed_report = StoreTranscribedReport(config)
 
     audio_path = extract_audio.extract_audio(final_path)
-    report_text = transcribe.transcribe(final_path, audio_path)
-    if report_text:
-        sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_text, final_path)
-        logging.info(f"Enhanced SR saved to: {sr_path}")
-        store_transcribed_report.store_transcribed_report(args.STUDY_KEY, report_text)
+    report_list = transcribe.transcribe(final_path, audio_path)
+    if report_list:
+        if config.get('ENCAPSULATE_TEXT_AS_ENHANCED_SR', 'OFF') == 'ON':
+            sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_list, final_path)
+            logging.info(f"Enhanced SR saved to: {sr_path}")
+        
+        if config.get('STORE_TRANSCRIBED_REPORT', 'OFF') == 'ON':
+            store_transcribed_report.store_transcribed_report(args.STUDY_KEY, report_list)
+        
+        if config.get('PRINT_GEMINI_OUTPUT', 'OFF') == 'ON':
+            print(report_list)
     else:
         logging.warning("No transcription was generated.")
 
