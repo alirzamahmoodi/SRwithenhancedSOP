@@ -1,6 +1,12 @@
+import traceback
 import pydicom
 import google.generativeai as genai
 import logging
+from pydantic import BaseModel
+
+class Transcription(BaseModel):
+  Reading: str
+  Conclusion: str
 
 class Transcribe:
     def __init__(self, config):
@@ -12,16 +18,22 @@ class Transcribe:
         self.logger.info(f"Transcribing audio file: {audio_path} for DICOM file: {dcm_path}")
         try:
             # Read DICOM file to extract patient and study information if needed
+            self.logger.debug(f"Reading DICOM file: {dcm_path}")
             ds = pydicom.dcmread(dcm_path)
+            self.logger.debug("DICOM file read successfully")
+
             # Upload audio file to Gemini API
+            self.logger.debug(f"Uploading audio file: {audio_path} to Gemini API")
             uploaded_file = genai.upload_file(audio_path)
+            self.logger.debug(f"Audio file uploaded successfully: {uploaded_file}")
+
             prompt = f"""You are a medical transcription assistant. Transcribe the following medical dictation into a structured report in English. Follow these guidelines:
 
-1. **Structure**: Organize the report into ONE paragraph of sentences of plain text.
+1. **Structure**: Organize the report into TWO sections: Reading and Conclusion. The Reading section should include the transcription of the medical dictation, and the Conclusion section should summarize the key findings or diagnosis. Use this schema: [ { "Reading": "Reading Text" }, { "Conclusion": "Conclusion Text" } ]
 
 2. **Language**: Ensure the entire report is in English, even if parts of the dictation are in Persian.
 
-3. **Patient Information**: Crucially, Exclude and remove any private patient information (e.g., name, ) in the report, but you are free to mention their age or history.
+3. **Patient Information**: Crucially, Exclude and remove any private patient information (e.g., name, ) in the report. You are free to mention their age or history if needed.
 
 4. **Tone**: Use a formal and professional tone suitable for a medical report. Write consistent paragraphs and avoid bullet points or lists.
 
@@ -29,18 +41,22 @@ class Transcribe:
 
 6. **Accuracy**: Ensure the transcription is accurate and free of errors.
 
-7. **Repetition**: Omit any repeated words or phrases and remove any unnecessary data and conversations between physician and transcription operator.
+7. **Remove Conversations**: Remove any unnecessary data and conversations between physician and transcription operator.
 """
+            self.logger.debug("Generating content with Gemini API")
             response = self.model.generate_content(
                 [uploaded_file, prompt],
                 generation_config=genai.GenerationConfig(
-                    response_mime_type="text/plain",
+                    response_mime_type="application/json",
+                    response_schema=list[Transcription],
                     temperature=1,
                 )
             )
-            report_content = response.text.strip()
+            report_content = response.text
             self.logger.info(f"Transcription completed for audio file: {audio_path}")
+            self.logger.debug(f"Generated report content: {report_content}")
             return report_content
         except Exception as e:
             self.logger.error(f"Transcription failed for audio file: {audio_path}, error: {str(e)}")
+            self.logger.debug(traceback.format_exc())
             return None
