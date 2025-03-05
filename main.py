@@ -3,6 +3,8 @@ import argparse
 import yaml
 import logging
 import oracledb
+import cryptography.hazmat.primitives.kdf.pbkdf2
+import cryptography.x509
 from query import process_study_key
 from extract_audio import ExtractAudio
 from transcribe import Transcribe
