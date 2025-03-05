@@ -9,7 +9,7 @@ ORACLE_PORT: 1521
 ORACLE_SERVICE_NAME: "persiangulf"
 ORACLE_USERNAME: "dodeulbyeol"
 ORACLE_PASSWORD: "tong1#pacs1011$"
-ORACLE_CLIENT_PATH: "G:\\My Drive\\Raouf\\Technical\\AI\\LLMs and Report Systems\\instantclient_12_1"
+ORACLE_CLIENT_PATH: "C:\\RaoufSoft\\instantclient_12_1"
 LONGTERM_PATH: "\\\\172.31.100.60\\Longterm"
 LONGTERM_USERNAME: "administrator"
 LONGTERM_PASSWORD: "10400"
