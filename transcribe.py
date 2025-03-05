@@ -29,7 +29,7 @@ class Transcribe:
 
             prompt = f"""You are a medical transcription assistant. Transcribe the following medical dictation into a structured report in English. Follow these guidelines:
 
-1. **Structure**: Organize the report into TWO sections: Reading and Conclusion. The Reading section should include the transcription of the medical dictation, and the Conclusion section should summarize the key findings or diagnosis. Use this schema: [ { "Reading": "Reading Text" }, { "Conclusion": "Conclusion Text" } ]
+1. **Structure**: Organize the report into a JSON with two sections: The first section 'Reading' and the second section 'Conclusion'. The Reading section should include the transcription of the medical dictation, and the Conclusion section should summarize the key findings or diagnosis from 'Reading' Section.
 
 2. **Language**: Ensure the entire report is in English, even if parts of the dictation are in Persian.
 
@@ -54,7 +54,7 @@ class Transcribe:
             )
             report_content = response.text
             self.logger.info(f"Transcription completed for audio file: {audio_path}")
-            self.logger.debug(f"Generated report content: {report_content}")
+            self.logger.debug(f"Generated report content:")
             return report_content
         except Exception as e:
             self.logger.error(f"Transcription failed for audio file: {audio_path}, error: {str(e)}")

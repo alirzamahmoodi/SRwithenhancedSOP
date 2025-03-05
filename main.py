@@ -18,12 +18,11 @@ config = load_config("config.yaml")
 
 oracle_client_path = config.get("ORACLE_CLIENT_PATH")
 if oracle_client_path:
-    os.environ["ORACLE_CLIENT_PATH"] = oracle_client_path
     try:
         cx_Oracle.init_oracle_client(lib_dir=oracle_client_path)
         logging.info("Connected to Oracle Client successfully.")
     except cx_Oracle.DatabaseError as e:
-        logging.error(f"Failed to connect to set Oracle Client path: {e}")
+        logging.error(f"Failed to set Oracle Client path: {e}")
         sys.exit(1)
 else:
     logging.error("ORACLE_CLIENT_PATH not found in config.yaml")
