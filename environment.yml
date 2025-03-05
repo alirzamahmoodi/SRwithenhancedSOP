@@ -4,13 +4,13 @@ channels:
   - pytorch
 dependencies:
   - python = 3.9
+  - cx_oracle
   - pip
   - pip:
       - google-generativeai
       - librosa
       - pydicom
       - pynetdicom
-      - cx_oracle
       - numpy
       - scipy
       - pyyaml
