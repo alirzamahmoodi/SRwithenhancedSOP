@@ -6,8 +6,7 @@ import os
 from PyInstaller.utils.hooks import collect_submodules
 
 # Optionally collect hidden imports if needed
-hidden_imports = collect_submodules('oracledb') + ['win32']
-
+hidden_imports = collect_submodules('orackedb')
 block_cipher = None
 
 datas = [
@@ -16,7 +15,7 @@ datas = [
 ]
 
 a = Analysis(
-    ['service.py'],  # note: now using service.py as the entry point
+    ['main.py'],
     pathex=['d:\\SRwithenhancedSOP'],
     binaries=[],
     datas=datas,
@@ -44,7 +43,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,  # set to False so no console window appears
+    console=True,
     icon='icon.ico'
 )
 
