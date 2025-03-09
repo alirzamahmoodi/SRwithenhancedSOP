@@ -1,23 +1,35 @@
-import cx_Oracle
+import oracledb
 import logging
 from datetime import datetime
 import traceback
+import json
 
 class StoreTranscribedReport:
     def __init__(self, config):
         self.config = config
         self.logger = logging.getLogger('detailed')
 
-    def store_transcribed_report(self, study_key, report_content):
+    def store_transcribed_report(self, study_key, report_list):
         self.logger.info(f"Storing transcribed report for study key: {study_key}")
-        dsn = cx_Oracle.makedsn(self.config["ORACLE_HOST"], self.config["ORACLE_PORT"], self.config["ORACLE_SERVICE_NAME"])
+
+        # Parse the report_list to extract Reading and Conclusion
+        try:
+            report_data = json.loads(report_list)
+            reading = report_data[0].get("Reading", "")
+            conclusion = report_data[1].get("Conclusion", "")
+        except (json.JSONDecodeError, IndexError, KeyError) as e:
+            self.logger.error(f"Failed to parse report_list: {str(e)}")
+            self.logger.debug(traceback.format_exc())
+            return
+
+        dsn = oracledb.makedsn(self.config["ORACLE_HOST"], self.config["ORACLE_PORT"], self.config["ORACLE_SERVICE_NAME"])
         self.logger.debug(f"DSN created: {dsn}")
         try:
-            connection = cx_Oracle.connect(self.config["ORACLE_USERNAME"], self.config["ORACLE_PASSWORD"], dsn)
+            connection = oracledb.connect(self.config["ORACLE_USERNAME"], self.config["ORACLE_PASSWORD"], dsn)
             self.logger.debug("Oracle connection established.")
             cursor = connection.cursor()
             self.logger.debug("Cursor created.")
-            
+
             # Retrieve REPORT_KEY from TREPORT using the provided study_key.
             cursor.execute(
                 "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key",
@@ -32,19 +44,19 @@ class StoreTranscribedReport:
             self.logger.debug(f"Retrieved REPORT_KEY: {report_key}")
             report_date = datetime.now().strftime('%Y%m%d%H%M%S')
             self.logger.debug(f"Generated report date: {report_date}")
-            
+
             # Generate a new REPORT_TEXT_KEY using the existing function F_GET_TEXTKEY
             cursor.execute("SELECT DEB_TREPORT.F_GET_TEXTKEY(:study_key, 'P') FROM DUAL", study_key=study_key)
             report_text_key = cursor.fetchone()[0]
             self.logger.debug(f"Generated REPORT_TEXT_KEY: {report_text_key}")
 
-            # Call the F_INSERT_TEXT function using callfunc (assuming it returns a number)
-            result = cursor.callfunc(
+            # Call the F_INSERT_TEXT function for Reading
+            result_reading = cursor.callfunc(
                 "DEB_TREPORT.F_INSERT_TEXT",
-                cx_Oracle.NUMBER,
-                [report_key, 4010, 21, report_date, report_content, "", "P"]
+                oracledb.NUMBER,
+                [report_key, 4010, 21, report_date, reading, conclusion, "P"]
             )
-            self.logger.debug(f"Called F_INSERT_TEXT and received result: {result}")
+            self.logger.debug(f"Called F_INSERT_TEXT for Reading and received result: {result_reading}")
 
             # Retrieve INSTITUTION_KEY and SRC_PATIENT_ID from TSTUDY using the provided study_key.
             cursor.execute(
@@ -62,7 +74,7 @@ class StoreTranscribedReport:
             # Update the REPORT_STAT in TREPORTTEXT using the function F_UPDATE
             update_result = cursor.callfunc(
                 "DEB_TREPORT.F_UPDATE",
-                cx_Oracle.NUMBER,  # using NUMBER as the return type, adjust if needed
+                oracledb.NUMBER,  # using NUMBER as the return type, adjust if needed
                 [
                     institution_key,  # V_INSTITUTION_KEY
                     src_patient_id,   # V_PATIENT_ID
