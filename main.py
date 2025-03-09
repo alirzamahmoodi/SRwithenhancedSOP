@@ -14,7 +14,7 @@ import os
 from query import process_study_key
 from extract_audio import ExtractAudio
 from transcribe import Transcribe
-from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
+# from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 from store_transcribed_report import StoreTranscribedReport
 from logger_config import setup_logging
 
@@ -54,7 +54,9 @@ class DatabaseMonitor:
 
             logging.info(f"Processing study key from queue: {study_key}")
             # Invoke the pipeline by calling main.py with the study_key.
-            subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "main.py"), str(study_key)])
+            exe_path = os.path.abspath(sys.argv[0])
+            subprocess.run([exe_path, str(study_key)], shell=True)
+            # use this line if you are in a test environment and using main.py for execution: subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "main.py"), str(study_key)])
             self.queue.task_done()
 
     def start_monitoring(self):
@@ -91,6 +93,7 @@ class DatabaseMonitor:
                     logging.info(f"Detected study {study_key} with REPORT_STAT '3010'. Adding to queue.")
                     self.queue.put(study_key)
                 cursor.close()
+                logging.info("Database cursor has been closed.")
                 connection.commit()
             except Exception as e:
                 logging.error(f"Error during monitoring: {e}")
@@ -116,11 +119,23 @@ def run_pipeline(study_key):
 
     extract_audio = ExtractAudio(config)
     transcribe = Transcribe(config)
-    encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
+    # encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
     store_transcribed_report = StoreTranscribedReport(config)
 
+    # Extract audio and obtain the temporary WAV file path.
     audio_path = extract_audio.extract_audio(final_path)
+
+    # Use the temporary WAV file in the transcription process.
     report_list = transcribe.transcribe(final_path, audio_path)
+
+    # After transcription (and any subsequent processing), delete the temporary WAV file.
+    if os.path.exists(audio_path):
+        try:
+            os.remove(audio_path)
+            logging.info(f"Temporary audio file deleted: {audio_path}")
+        except Exception as e:
+            logging.warning(f"Failed to delete temporary audio file {audio_path}: {e}")
+
     if report_list:
         if config.get('ENCAPSULATE_TEXT_AS_ENHANCED_SR', 'OFF') == 'ON':
             sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_list, final_path)
