@@ -1,40 +1,49 @@
+
 # Build Instructions
 
-1. Create the conda environment:
-    ```bash
-    conda env create -f environment.yml
-    ```
-2. Activate the environment:
-    ```bash
-    conda activate google-ai
-    ```
-3. Install `pyinstaller`:
-    ```bash
-    pip install pyinstaller
-    ```
-4. Build the project using:
-    ```bash
-    pyinstaller audio_transcriber.spec
-    ```
+1. **Create the Conda Environment:**
+   ```bash
+   conda env create -f environment.yml
+   ```
+2. **Activate the Environment:**
+   ```bash
+   conda activate google-ai
+   ```
+3. **Install PyInstaller:**
+   ```bash
+   pip install pyinstaller
+   ```
+4. **Build the Project:**
+   ```bash
+   pyinstaller audio_transcriber.spec
+   ```
 
 # Run Instructions
 
-1. Move the `config.yaml` file from:
-    ```
-    dist/audio_transcriber/_internal
-    ```
-    to:
-    ```
-    dist/audio_transcriber/
-    ```
+1. **Move the `config.yaml` File:**
+   - After building, move the `config.yaml` file from:
+     ```
+     dist/audio_transcriber/_internal
+     ```
+     to:
+     ```
+     dist/
+     ```
+   This ensures that `config.yaml` is in the same folder as `audio_transcriber.exe`.
 
-2. Edit the `config.yaml` file according to your use case.
+2. **Edit the `config.yaml` File:**
+   - Update the file according to your use case (e.g., set paths, database credentials, and other configuration options).
 
-3. Set up **DICOM Receiver** and **DICOM Register** services for dictation and structured report processing.
+3. **Set Up DICOM Receiver and Register Services:**
+   - Configure your **DICOM Receiver** and **DICOM Register** services as needed for dictation and structured report processing.
 
-4. Open **Command Prompt** in the `dist/audio_transcriber/` directory and run:
-    ```bash
-    audio_transcriber.exe
-    ```
+4. **Run the Application in Monitor Mode:**
+   - Open **Command Prompt** in the `dist` directory and run:
+     ```bash
+     audio_transcriber.exe --monitor
+     ```
+   - This command starts the process in monitor mode, and the console will display logs, showing that the service is up and running while it listens for dictated studies.
 
-5. The service will be up and running, listening for dictation `.dcm` files in the **spool folder**.
+--- 
+
+This updated README reflects the steps needed to build and run the project with the current workflow.
