@@ -1,0 +1,157 @@
+2025-03-09 10:44:43,147 - root - INFO - Starting database monitor mode...
+2025-03-09 10:44:43,371 - root - INFO - Connected to Oracle database for monitoring.
+2025-03-09 10:44:43,379 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 10:44:43,380 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 10:44:43,380 - root - INFO - Processing study key from queue: 1
+2025-03-09 10:44:43,380 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 10:44:45,307 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 10:44:45,308 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 10:44:45,314 - root - INFO - Connecting to Oracle database.
+2025-03-09 10:44:45,385 - root - INFO - Creating cursor for database operations.
+2025-03-09 10:44:45,394 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 10:44:45,395 - detailed - INFO - Extracting audio from DICOM file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 10:44:51,996 - detailed - WARNING - Error on attempt 1 for file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm, error: [Errno 22] Invalid argument: '\\\\172.31.100.60\\Longterm\\2025\\01\\24\\AU\\1260408116\\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm'
+2025-03-09 10:45:01,458 - detailed - WARNING - Error on attempt 2 for file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm, error: [Errno 22] Invalid argument: '\\\\172.31.100.60\\Longterm\\2025\\01\\24\\AU\\1260408116\\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm'
+2025-03-09 10:45:10,954 - detailed - WARNING - Error on attempt 3 for file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm, error: [Errno 22] Invalid argument: '\\\\172.31.100.60\\Longterm\\2025\\01\\24\\AU\\1260408116\\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm'
+2025-03-09 10:45:20,461 - detailed - WARNING - Error on attempt 4 for file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm, error: [Errno 22] Invalid argument: '\\\\172.31.100.60\\Longterm\\2025\\01\\24\\AU\\1260408116\\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm'
+2025-03-09 10:45:29,980 - detailed - WARNING - Error on attempt 5 for file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm, error: [Errno 22] Invalid argument: '\\\\172.31.100.60\\Longterm\\2025\\01\\24\\AU\\1260408116\\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm'
+2025-03-09 10:45:29,980 - detailed - ERROR - Unable to access file after 5 attempts: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 10:45:30,197 - root - INFO - Processing study key from queue: 53
+2025-03-09 10:45:32,452 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 10:45:32,452 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 10:45:32,453 - root - INFO - Connecting to Oracle database.
+2025-03-09 10:45:32,531 - root - INFO - Creating cursor for database operations.
+2025-03-09 10:45:32,543 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 10:45:32,544 - detailed - INFO - Extracting audio from DICOM file: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 10:45:38,685 - root - INFO - Database monitoring stopped by user.
+2025-03-09 11:23:56,625 - root - INFO - Starting database monitor mode...
+2025-03-09 11:23:56,690 - root - INFO - Connected to Oracle database for monitoring.
+2025-03-09 11:23:56,696 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:23:56,698 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:23:56,698 - root - INFO - Processing study key from queue: 1
+2025-03-09 11:23:56,700 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:23:58,779 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:23:58,780 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:23:58,780 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:23:58,841 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:23:58,846 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:23:58,979 - root - INFO - Processing study key from queue: 53
+2025-03-09 11:24:00,975 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:24:00,975 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:24:00,976 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:24:01,041 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:24:01,047 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:24:01,204 - root - INFO - Processing study key from queue: 22
+2025-03-09 11:24:03,244 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:24:03,245 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:24:03,245 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:24:03,306 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:24:03,311 - root - ERROR - No TDICTATION record found for REPORT_KEY=63
+2025-03-09 11:24:56,742 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:24:56,743 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:24:56,743 - root - INFO - Processing study key from queue: 1
+2025-03-09 11:24:56,744 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:24:59,179 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:24:59,179 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:24:59,180 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:24:59,223 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:24:59,229 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:24:59,361 - root - INFO - Processing study key from queue: 53
+2025-03-09 11:25:01,334 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:25:01,334 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:25:01,335 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:25:01,394 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:25:01,403 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:25:01,550 - root - INFO - Processing study key from queue: 22
+2025-03-09 11:25:03,542 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:25:03,542 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:25:03,543 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:25:03,599 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:25:03,604 - root - ERROR - No TDICTATION record found for REPORT_KEY=63
+2025-03-09 11:25:56,788 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:25:56,790 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:25:56,790 - root - INFO - Processing study key from queue: 1
+2025-03-09 11:25:56,792 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:25:58,812 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:25:58,813 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:25:58,814 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:25:58,876 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:25:58,884 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:25:59,015 - root - INFO - Processing study key from queue: 53
+2025-03-09 11:26:01,058 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:26:01,058 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:26:01,059 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:26:01,128 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:26:01,134 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:26:01,286 - root - INFO - Processing study key from queue: 22
+2025-03-09 11:26:03,322 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:26:03,322 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:26:03,323 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:26:03,382 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:26:03,386 - root - ERROR - No TDICTATION record found for REPORT_KEY=63
+2025-03-09 11:26:56,832 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:26:56,833 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:26:56,834 - root - INFO - Processing study key from queue: 1
+2025-03-09 11:26:56,835 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:26:59,065 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:26:59,066 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:26:59,067 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:26:59,125 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:26:59,133 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:26:59,289 - root - INFO - Processing study key from queue: 53
+2025-03-09 11:27:00,846 - root - INFO - Database monitoring stopped by user.
+2025-03-09 11:27:08,612 - root - INFO - Starting database monitor mode...
+2025-03-09 11:27:08,688 - root - INFO - Connected to Oracle database for monitoring.
+2025-03-09 11:27:08,693 - root - INFO - Detected study 1 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:27:08,693 - root - INFO - Detected study 53 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:27:08,693 - root - INFO - Processing study key from queue: 1
+2025-03-09 11:27:08,694 - root - INFO - Detected study 22 with REPORT_STAT '3010'. Adding to queue.
+2025-03-09 11:27:10,673 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:27:10,674 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:27:10,674 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:27:10,730 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:27:10,739 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:27:10,741 - detailed - INFO - Extracting audio from DICOM file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:27:10,852 - detailed - INFO - DICOM file read successfully on attempt 1
+2025-03-09 11:27:10,853 - detailed - INFO - Waveform extracted from DICOM file.
+2025-03-09 11:27:10,873 - detailed - INFO - Audio extracted and saved to: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.wav
+2025-03-09 11:27:10,874 - detailed - INFO - Transcribing audio file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.wav for DICOM file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:27:10,875 - detailed - DEBUG - Reading DICOM file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.dcm
+2025-03-09 11:27:10,892 - detailed - DEBUG - DICOM file read successfully
+2025-03-09 11:27:10,892 - detailed - DEBUG - Uploading audio file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.wav to Gemini API
+2025-03-09 11:27:16,038 - detailed - DEBUG - Audio file uploaded successfully: genai.File({
+    'name': 'files/ezrstssrqs17',
+    'display_name': '1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.wav',
+    'mime_type': 'audio/wav',
+    'sha256_hash': 'Y2NhYmRmMjk2ZGYxZTAwNTYyOWVkZWRhNWI0MGNlMjFkMzZiY2JjNzEyYmUzMWQ5MjRiMDJiOTkwOTg3YTAxNQ==',
+    'size_bytes': '41644',
+    'state': 'ACTIVE',
+    'uri': 'https://generativelanguage.googleapis.com/v1beta/files/ezrstssrqs17',
+    'create_time': '2025-03-09T07:57:15.080047Z',
+    'expiration_time': '2025-03-11T07:57:15.064567041Z',
+    'update_time': '2025-03-09T07:57:15.080047Z'})
+2025-03-09 11:27:16,039 - detailed - DEBUG - Generating content with Gemini API
+2025-03-09 11:27:26,983 - detailed - INFO - Transcription completed for audio file: \\172.31.100.60\Longterm\2025\01\24\AU\1260408116\1.3.12.2.1107.5.2.18.142044.30000025012404145038500000043\1.2.276.0.7230010.3.1.4.1605365322.24844.1740917301.836_9564.wav
+2025-03-09 11:27:26,984 - detailed - DEBUG - Generated report content:
+[
+  {
+    "Reading": "Based on the presented sound, there is an indication of stridor. Stridor is a high-pitched, wheezing sound that is typically associated with upper airway obstruction. Further investigation is needed to determine the underlying cause of the stridor and ensure adequate airway management. Clinical correlation is advised. A detailed assessment of the patient's respiratory status is warranted, including oxygen saturation monitoring and assessment for signs of respiratory distress. Depending on the clinical scenario, potential causes of stridor could include laryngomalacia, subglottic stenosis, foreign body aspiration, or infection such as croup. The findings are limited to audio analysis only and require clinical context for accurate diagnosis and management planning.  Endotracheal intubation materials are available and should be readily accessible in case of a rapid airway obstruction that is quickly deteriorating. Airway assessment and clinical judgment are critical for appropriate intervention, especially considering the patient's history of previous episodes of respiratory distress. Given the patient's age of 6 years old and history, the presentation is concerning and requires prompt evaluation and management. Airway evaluation should include assessment for drooling, difficulty swallowing, and hoarseness. This could change a lot and become severe very quickly. Thus, close monitoring is important. Differential diagnosis would include viral croup and epiglottitis. Examination by ENT (Ear, Nose, and Throat) is also advised to ascertain the condition of the vocal cords and upper airway. Finally, appropriate measures need to be taken depending on the diagnosis. The patient's family needs to be counseled about the potential treatment options, including medications like corticosteroids and racemic epinephrine, and the possibility of intubation or surgical intervention if indicated. Continuous pulse oximetry and cardiorespiratory monitoring are also crucial to detect any deterioration in the patient's condition promptly. The primary focus is securing the airway and managing the underlying cause of the stridor. The patient's history of recurrent episodes of respiratory distress highlights the need for a thorough and comprehensive approach to diagnosis and management.  Considering the persistent and recurrent nature of the symptoms, it is important to rule out any structural abnormalities or underlying medical conditions that may be contributing to the patient's respiratory issues. Furthermore, the family should be educated on recognizing early signs of respiratory distress and the appropriate steps to take in such situations, including when to seek immediate medical attention. Proactive planning and preparedness are essential for effectively managing potential airway emergencies, especially in pediatric patients with a history of recurrent respiratory problems. Close collaboration between the primary care physician, pulmonologist, and ENT specialist is crucial for optimizing the patient's care and improving their overall respiratory health. A detailed management plan should be developed and communicated to all relevant healthcare providers and the patient's family to ensure coordinated and consistent care. Patient education should also include strategies for preventing future episodes of respiratory distress, such as avoiding known triggers, ensuring appropriate vaccination status, and maintaining a healthy lifestyle. Additionally, it may be beneficial to explore the possibility of home nebulizer therapy or other respiratory support measures to help manage symptoms and prevent exacerbations. Finally, regular follow-up appointments are necessary to monitor the patient's progress, adjust the treatment plan as needed, and provide ongoing support and education to the patient and their family.  By taking a comprehensive and proactive approach, we can effectively manage the patient's respiratory condition, minimize the risk of complications, and improve their overall quality of life. Close collaboration between the healthcare team, the patient, and their family is essential for achieving the best possible outcomes and ensuring the patient's long-term respiratory well-being. Given the patient's recurrent respiratory distress, further investigations such as bronchoscopy may be necessary to evaluate the airway anatomy and identify any underlying structural abnormalities or inflammatory processes. Furthermore, allergy testing may be considered to rule out any allergic triggers that may be contributing to the patient's symptoms.  A multidisciplinary approach involving pulmonologists, allergists, and ENT specialists is essential for optimizing the patient's care and developing a comprehensive management plan. In addition to medical interventions, supportive care measures such as humidification and chest physiotherapy may be beneficial in managing the patient's symptoms and promoting airway clearance. Patient education should also include strategies for managing respiratory infections, such as hand hygiene, avoiding close contact with sick individuals, and seeking prompt medical attention for any signs of respiratory illness. Finally, it is important to emphasize the importance of adherence to the prescribed treatment plan and regular follow-up appointments to ensure optimal management of the patient's respiratory condition. By working collaboratively with the patient, their family, and the healthcare team, we can effectively manage their respiratory health and improve their overall quality of life. Considering the recurrent nature of the patient's respiratory distress, it is also important to assess for any underlying psychological factors that may be contributing to their symptoms. Anxiety and stress can often exacerbate respiratory symptoms, and addressing these issues can be an important component of the overall management plan. Referral to a child psychologist or counselor may be beneficial in helping the patient and their family cope with the emotional challenges associated with chronic respiratory illness.  In addition to psychological support, it is also important to provide education and resources to help the patient and their family better understand and manage their respiratory condition. This may include information on asthma action plans, medication administration techniques, and strategies for managing triggers. Furthermore, it is important to encourage the patient and their family to actively participate in their care and to communicate any concerns or questions they may have to the healthcare team. By empowering patients and their families to take an active role in managing their health, we can promote better outcomes and improve their overall quality of life. Finally, it is important to recognize that chronic respiratory illness can have a significant impact on the patient's social and academic functioning. School absenteeism and difficulty participating in extracurricular activities can lead to social isolation and academic challenges. It is important to work collaboratively with the school and other relevant stakeholders to ensure that the patient receives the support and accommodations they need to succeed academically and socially. By addressing the multifaceted challenges associated with chronic respiratory illness, we can help patients achieve their full potential and live fulfilling lives. Given the patient's complex medical history and recurrent respiratory distress, it is also important to consider the possibility of rare or unusual underlying conditions that may be contributing to their symptoms. Genetic testing or advanced imaging studies may be necessary to further investigate these possibilities and to refine the diagnosis and management plan. In addition, it is important to stay up-to-date on the latest research and clinical guidelines for managing pediatric respiratory illnesses, as new information and treatments are constantly emerging. By remaining vigilant and proactive in our approach, we can ensure that the patient receives the best possible care and achieve the best possible outcomes. Finally, it is important to recognize that managing chronic respiratory illness requires a long-term commitment and ongoing support from the healthcare team. Regular follow-up appointments, open communication, and a collaborative approach are essential for ensuring that the patient receives the care and support they need to thrive. By building a strong and trusting relationship with the patient and their family, we can work together to achieve the best possible outcomes and improve their overall quality of life. Furthermore, it is also essential to advocate for policies and programs that support children with chronic respiratory illnesses and their families. Access to affordable healthcare, clean air, and supportive school environments are critical for promoting the health and well-being of these vulnerable individuals. By working together as a community, we can create a more equitable and supportive environment for all children with chronic respiratory illnesses. Finally, it is important to recognize that managing chronic respiratory illness is not only a medical challenge but also a human one. Patients and their families often face significant emotional, social, and financial challenges as they navigate the complexities of chronic illness. It is our responsibility as healthcare providers to provide compassionate and holistic care that addresses the whole person, not just their physical symptoms. By listening to their stories, validating their experiences, and providing unwavering support, we can help patients and their families cope with the challenges of chronic illness and live fulfilling lives. The clinical significance of this recording should be weighed with a complete evaluation of the patient."
+    },
+    {
+    "Conclusion": "The audio analysis suggests the presence of stridor, indicating a potential upper airway obstruction. Urgent clinical assessment, airway management, and further investigation are required to identify the cause and ensure the patient's respiratory stability."
+  }
+]2025-03-09 11:27:29,128 - root - INFO - Processing study key from queue: 53
+2025-03-09 11:27:31,058 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:27:31,059 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:27:31,059 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:27:31,125 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:27:31,131 - root - INFO - DICOM file path: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:27:31,131 - detailed - INFO - Extracting audio from DICOM file: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:27:31,134 - detailed - ERROR - File does not exist: \\172.31.100.60\Longterm\2025\01\26\AU\0052056473\1.3.12.2.1107.5.2.18.142044.30000025012606594607000000020\1.2.276.0.7230010.3.1.4.1857064875.22400.1741074815.672_9924.dcm
+2025-03-09 11:27:31,274 - root - INFO - Processing study key from queue: 22
+2025-03-09 11:27:33,247 - root - INFO - Creating DSN for Oracle connection.
+2025-03-09 11:27:33,247 - root - INFO - DSN: (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=172.31.100.60)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=persiangulf)))
+2025-03-09 11:27:33,248 - root - INFO - Connecting to Oracle database.
+2025-03-09 11:27:33,311 - root - INFO - Creating cursor for database operations.
+2025-03-09 11:27:33,316 - root - ERROR - No TDICTATION record found for REPORT_KEY=63
+2025-03-09 11:28:04,094 - root - INFO - Database monitoring stopped by user.
