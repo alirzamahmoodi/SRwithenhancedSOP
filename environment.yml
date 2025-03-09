@@ -3,17 +3,16 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python
-  - oracledb
+  - python=3.11
+  - oracledb=2.5.1
   - pip
   - pip:
       - google-generativeai
-      - librosa
       - pydicom
       - pynetdicom
       - numpy
       - scipy
       - pyyaml
-      - watchdog
       - pyinstaller
       - cryptography
+      - pywin32

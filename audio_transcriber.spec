@@ -1,3 +1,4 @@
+# audio_transcriber.spec
 # -*- mode: python ; coding: utf-8 -*-
 
 import sys
@@ -5,18 +6,18 @@ import os
 from PyInstaller.utils.hooks import collect_submodules
 
 # Optionally collect hidden imports if needed
-hidden_imports = collect_submodules('orackedb')
+hidden_imports = collect_submodules('oracledb') + ['win32']
 
 block_cipher = None
 
 datas = [
     ('config.yaml', '.'),  # include config.yaml in the root of the bundle
-    ('icon.ico', '.')  # include icon.ico in the root of the bundle
+    ('icon.ico', '.')      # include icon.ico in the root of the bundle
 ]
 
 a = Analysis(
-    ['main.py'],
-    pathex=['d:\SRwithenhancedSOP'],
+    ['service.py'],  # note: now using service.py as the entry point
+    pathex=['d:\\SRwithenhancedSOP'],
     binaries=[],
     datas=datas,
     hiddenimports=hidden_imports,
@@ -43,8 +44,8 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,  # Set to False for a windowed app
-    icon='icon.ico'  # Path to icon file
+    console=False,  # set to False so no console window appears
+    icon='icon.ico'
 )
 
 coll = COLLECT(
