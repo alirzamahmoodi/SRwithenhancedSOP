@@ -53,10 +53,21 @@ class DatabaseMonitor:
                 continue
 
             logging.info(f"Processing study key from queue: {study_key}")
-            # Invoke the pipeline by calling main.py with the study_key.
-            exe_path = os.path.abspath(sys.argv[0])
-            subprocess.run([exe_path, str(study_key)], shell=True)
-            # use this line if you are in a test environment and using main.py for execution: subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "main.py"), str(study_key)])
+            
+            # Determine if running as compiled EXE or script
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                exe_path = sys.executable
+                args = [exe_path, str(study_key)]
+            else:
+                # Running as Python script
+                args = [
+                    sys.executable,
+                    os.path.join(os.path.dirname(__file__), "main.py"),
+                    str(study_key)
+                ]
+            
+            subprocess.run(args)
             self.queue.task_done()
 
     def start_monitoring(self):
