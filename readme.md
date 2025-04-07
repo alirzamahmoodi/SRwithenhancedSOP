@@ -1,3 +1,18 @@
+# Documentation Structure
+
+```bash
+   e:\SRwithenhancedSOP\docs\
+   ├── high_level/
+   │   ├── architecture.md
+   │   ├── installation.md
+   │   └── config_reference.md
+   ├── modules/
+   │   ├── main.md
+   │   ├── query.md
+   │   ├── extract_audio.md
+   │   ├── transcribe.md
+   │   └── store_transcribed_report.md
+```
 
 # Build Instructions
 
@@ -46,4 +61,3 @@
 
 --- 
 
-This updated README reflects the steps needed to build and run the project with the current workflow.
