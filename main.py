@@ -11,13 +11,14 @@ import subprocess
 import time
 import os
 
-from database_monitor import DatabaseMonitor
-from query import process_study_key
-from extract_audio import ExtractAudio
-from transcribe import Transcribe
-from store_transcribed_report import StoreTranscribedReport
-from logger_config import setup_logging
-# from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
+# Update import statements to use modules directory
+from modules.database_monitor import DatabaseMonitor
+from modules.query import process_study_key
+from modules.extract_audio import ExtractAudio
+from modules.transcribe import Transcribe
+from modules.store_transcribed_report import StoreTranscribedReport
+from modules.logger_config import setup_logging
+# from modules.encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
