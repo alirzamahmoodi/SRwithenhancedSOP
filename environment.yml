@@ -4,15 +4,15 @@ channels:
   - conda-forge
 dependencies:
   - python=3.11
-  - oracledb=2.5.1
+  - oracledb=2.5.1 # Oracle DB connectivity
   - pip
   - pip:
-      - google-generativeai
-      - pydicom
-      - pynetdicom
-      - numpy
-      - scipy
-      - pyyaml
-      - pyinstaller
-      - cryptography
-      - pywin32
+      - google-generativeai # Core AI integration
+      - pydicom # DICOM processing
+      - pynetdicom # DICOM network ops
+      - numpy # Audio processing (Reading)
+      - scipy # Audio processing (Writing)
+      - pyyaml # Config file parsing
+      - pyinstaller # Executable packaging
+      - cryptography # Security functions
+      - pywin32 # Windows integration

@@ -6,7 +6,7 @@ import os
 from PyInstaller.utils.hooks import collect_submodules
 
 # Optionally collect hidden imports if needed
-hidden_imports = collect_submodules('orackedb')
+hidden_imports = collect_submodules('oracledb')
 block_cipher = None
 
 datas = [

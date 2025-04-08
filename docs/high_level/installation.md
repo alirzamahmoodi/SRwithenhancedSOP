@@ -2,8 +2,8 @@
 
 ## System Requirements
 - Windows 10/11 or Windows Server 2019/22/25 64-bit
-- Miniconda3
-- Oracle Instant Client 19c+ (if not using thick client, which is included in the Oracle 12c in PACS Server)
+- Anaconda or Miniconda
+- Oracle Instant Client 19c+ (if not using thin client, which is included in the oracledb package)
 - 4GB+ free disk space
 
 ## Development Setup
@@ -71,8 +71,6 @@ ORACLE_HOST: "172.31.100.60" # for example
 GEMINI_API_KEY: "your-api-key"
 ```
 
-```
-
 ## Troubleshooting
 - **Environment Issues**: Validate with `conda list --export`
 - **Oracle Errors**: Check `ORACLE_HOME` path in system variables
@@ -81,4 +79,3 @@ GEMINI_API_KEY: "your-api-key"
 ## Cross References
 - [Architecture Overview](architecture.md)
 - [Configuration Guide](../config/config_reference.md)
-```
