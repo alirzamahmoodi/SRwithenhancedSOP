@@ -22,18 +22,18 @@ graph LR
 
 ### Component Breakdown
 
-1. **Database Monitor** (<mcsymbol name="DatabaseMonitor" filename="main.py" path="e:\SRwithenhancedSOP\main.py" startline="40" type="class"></mcsymbol>)
+1. **Database Monitor**
    - Polls TREPORT table every 60 seconds
    - Manages study processing queue
    - Self-reloading architecture for EXE/script modes
 
-2. **Processing Pipeline** (<mcsymbol name="run_pipeline" filename="main.py" path="e:\SRwithenhancedSOP\main.py" startline="123" type="function"></mcsymbol>)
+2. **Processing Pipeline**
    ```python
    def run_pipeline(study_key):
-       path = process_study_key()  # <mcsymbol name="process_study_key" filename="query.py" path="e:\SRwithenhancedSOP\query.py" startline="9" type="function"></mcsymbol>
-       audio = extract_audio()     # <mcsymbol name="ExtractAudio.extract_audio" filename="extract_audio.py" path="e:\SRwithenhancedSOP\extract_audio.py" startline="13" type="function"></mcsymbol>
-       report = transcribe()       # <mcsymbol name="Transcribe.transcribe" filename="transcribe.py" path="e:\SRwithenhancedSOP\transcribe.py" startline="18" type="function"></mcsymbol>
-       store_results()            # <mcsymbol name="StoreTranscribedReport.store_transcribed_report" filename="store_transcribed_report.py" path="e:\SRwithenhancedSOP\store_transcribed_report.py" startline="9" type="function"></mcsymbol>
+       path = process_study_key()  
+       audio = extract_audio()     
+       report = transcribe()       
+       store_results()            
    ```
 
 3. **Error Handling**
@@ -45,10 +45,10 @@ graph LR
 
 | Layer              | Technologies                          | Config Source                          |
 |---------------------|---------------------------------------|----------------------------------------|
-| **Runtime**         | Python 3.11, Oracle Instant Client    | <mcfile name="environment.yml" path="e:\SRwithenhancedSOP\environment.yml"></mcfile> |
-| **AI Processing**   | Google Gemini 2.0 Flash              | <mcfile name="config.yaml" path="e:\SRwithenhancedSOP\config.yaml"></mcfile> |
+| **Runtime**         | Python 3.11, Oracle Instant Client    | environment.yml |
+| **AI Processing**   | Google Gemini 2.0 Flash              | config.yaml |
 | **Medical Imaging** | pydicom, pynetdicom                   | DICOM Standard Compliance              |
-| **Security**        | Oracle Advanced Security, Cryptography| <mcfile name="config.yaml" path="e:\SRwithenhancedSOP\config.yaml"></mcfile> |
+| **Security**        | Oracle Advanced Security, Cryptography| environment.yml |
 
 ## Data Flow
 1. **Input**: Study Key via CLI/Monitor
@@ -79,7 +79,7 @@ graph LR
 ```
 
 ## Security Considerations
-- PHI Redaction in <mcsymbol name="Transcribe.transcribe" filename="transcribe.py" path="e:\SRwithenhancedSOP\transcribe.py" startline="18" type="function"></mcsymbol>
+- PHI Redaction in Transcribe
 - Encrypted database credentials
 - Audit trails for report modifications
 
