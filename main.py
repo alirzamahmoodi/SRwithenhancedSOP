@@ -11,12 +11,14 @@ import subprocess
 import time
 import os
 
-from query import process_study_key
-from extract_audio import ExtractAudio
-from transcribe import Transcribe
-# from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
-from store_transcribed_report import StoreTranscribedReport
-from logger_config import setup_logging
+# Update import statements to use modules directory
+from modules.database_monitor import DatabaseMonitor
+from modules.query import process_study_key
+from modules.extract_audio import ExtractAudio
+from modules.transcribe import Transcribe
+from modules.store_transcribed_report import StoreTranscribedReport
+from modules.logger_config import setup_logging
+# from modules.encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
@@ -35,89 +37,6 @@ config = load_config("config.yaml")
 # else:
 #     logging.error("ORACLE_CLIENT_PATH not found in config.yaml")
 #     sys.exit(1)
-
-# ----------------- Database Monitor Class -----------------
-class DatabaseMonitor:
-    def __init__(self, config):
-        self.config = config
-        self.is_running = True
-        self.queue = queue.Queue()
-        self.poll_interval = 60  # seconds
-
-    def worker(self):
-        """Worker thread that processes study keys from the queue."""
-        while self.is_running:
-            try:
-                study_key = self.queue.get(timeout=1)
-            except queue.Empty:
-                continue
-
-            logging.info(f"Processing study key from queue: {study_key}")
-            
-            # Determine if running as compiled EXE or script
-            if getattr(sys, 'frozen', False):
-                # Running as compiled executable
-                exe_path = sys.executable
-                args = [exe_path, str(study_key)]
-            else:
-                # Running as Python script
-                args = [
-                    sys.executable,
-                    os.path.join(os.path.dirname(__file__), "main.py"),
-                    str(study_key)
-                ]
-            
-            subprocess.run(args)
-            self.queue.task_done()
-
-    def start_monitoring(self):
-        # Start the worker thread
-        worker_thread = threading.Thread(target=self.worker, daemon=True)
-        worker_thread.start()
-
-        # Build DSN using the Oracle configuration
-        dsn = oracledb.makedsn(
-            self.config["ORACLE_HOST"],
-            self.config["ORACLE_PORT"],
-            service_name=self.config["ORACLE_SERVICE_NAME"]
-        )
-        try:
-            connection = oracledb.connect(
-                user=self.config["ORACLE_USERNAME"],
-                password=self.config["ORACLE_PASSWORD"],
-                dsn=dsn
-            )
-            logging.info("Connected to Oracle database for monitoring.")
-        except Exception as e:
-            logging.error(f"Database connection failed: {e}")
-            return
-
-        while self.is_running:
-            try:
-                cursor = connection.cursor()
-                # Query for studies with REPORT_STAT = 3010 (numeric or string based on your schema)
-                query = "SELECT STUDY_KEY FROM TREPORT WHERE REPORT_STAT = 3010"
-                cursor.execute(query)
-                rows = cursor.fetchall()
-                for row in rows:
-                    study_key = row[0]
-                    logging.info(f"Detected study {study_key} with REPORT_STAT '3010'. Adding to queue.")
-                    self.queue.put(study_key)
-                cursor.close()
-                logging.info("Database cursor has been closed.")
-                connection.commit()
-            except Exception as e:
-                logging.error(f"Error during monitoring: {e}")
-            # Wait for the next poll interval
-            for _ in range(self.poll_interval):
-                if not self.is_running:
-                    break
-                time.sleep(1)
-        connection.close()
-        logging.info("Monitor Database Service has stopped.")
-
-    def stop_monitoring(self):
-        self.is_running = False
 
 # ----------------- Pipeline Execution -----------------
 def run_pipeline(study_key):
