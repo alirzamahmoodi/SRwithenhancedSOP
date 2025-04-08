@@ -95,7 +95,17 @@ python main.py --monitor
 audio_transcriber.exe --monitor
 ```
 
-## Related Documents
-- [System Architecture](high_level/architecture.md)
-- [Monitoring Configuration](high_level/config_reference.md)
+## Module Components
+- [Database Monitor](database_monitor.md)
+- [Logger Configuration](logger_config.md)
+- [Encapsulate SR](encapsulate_text_as_enhanced_sr.md)
+- [Query Processing](query.md)
+- [Audio Extraction](extract_audio.md)
+- [Transcription Engine](transcribe.md)
+- [Report Storage](store_transcribed_report.md)
+
+## Cross References
+- [System Architecture](../high_level/architecture.md)
+- [Configuration Reference](../high_level/config_reference.md)
+- [Installation Guide](../high_level/installation.md)
 ```
