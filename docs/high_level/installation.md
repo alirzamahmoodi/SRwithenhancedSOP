@@ -2,8 +2,8 @@
 
 ## System Requirements
 - Windows 10/11 or Windows Server 2019/22/25 64-bit
-- Miniconda3
-- Oracle Instant Client 19c+ (if not using thick client, which is included in the Oracle 12c in PACS Server)
+- Anaconda or Miniconda
+- Oracle Instant Client 19c+ (if not using thin client, which is included in the oracledb package)
 - 4GB+ free disk space
 
 ## Development Setup
