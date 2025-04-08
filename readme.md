@@ -5,12 +5,16 @@
    ├── high_level/
    │   ├── architecture.md
    │   ├── installation.md
+   │   ├── logging.md
    │   └── config_reference.md
    ├── modules/
    │   ├── main.md
    │   ├── query.md
    │   ├── extract_audio.md
    │   ├── transcribe.md
+   │   ├── logger_config.md
+   │   ├── encapsulate_text_as_enhanced_sr.md
+   │   ├── database_monitor.md
    │   └── store_transcribed_report.md
 ```
 
