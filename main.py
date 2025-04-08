@@ -11,12 +11,13 @@ import subprocess
 import time
 import os
 
+from database_monitor import DatabaseMonitor
 from query import process_study_key
 from extract_audio import ExtractAudio
 from transcribe import Transcribe
-# from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 from store_transcribed_report import StoreTranscribedReport
 from logger_config import setup_logging
+# from encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
@@ -53,7 +54,7 @@ class DatabaseMonitor:
                 continue
 
             logging.info(f"Processing study key from queue: {study_key}")
-            
+
             # Determine if running as compiled EXE or script
             if getattr(sys, 'frozen', False):
                 # Running as compiled executable
@@ -66,7 +67,7 @@ class DatabaseMonitor:
                     os.path.join(os.path.dirname(__file__), "main.py"),
                     str(study_key)
                 ]
-            
+
             subprocess.run(args)
             self.queue.task_done()
 

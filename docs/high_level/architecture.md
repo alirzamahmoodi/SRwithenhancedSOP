@@ -7,15 +7,17 @@ A distributed medical transcription system that converts DICOM audio dictations 
 
 ### Core Processing Pipeline
 ```mermaid
-graph TD
-    A[Study Key] --> B{Database Query}
+graph LR
+    M[[Database Monitor]] --> N{Detect New Studies}
+    N --> A[Study Key]
+    A --> B{Database Query}
     B --> C[[Extract Audio]]
     C --> D[[Transcribe]]
     D --> E[[Store Report]]
     E --> F[PACS Update]
-    
+
     classDef process fill:#e1f5fe,stroke:#039be5;
-    class B,C,D,E process
+    class M,N,B,C,D,E process
 ```
 
 ### Component Breakdown
@@ -85,4 +87,3 @@ graph TD
 - [Installation Guide](installation.md)
 - [Configuration Reference](../config/config_reference.md)
 - [Module Documentation](../modules/main.md)
-```
