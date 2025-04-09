@@ -16,3 +16,6 @@ dependencies:
       - pyinstaller # Executable packaging
       - cryptography # Security functions
       - pywin32 # Windows integration
+      - django~=3.2.0 # Pin Django to version 3.2.x
+      - pymongo~=3.12.0 # Pin Pymongo to version 3.12.x
+      - djongo # Add Djongo

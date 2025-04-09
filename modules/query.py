@@ -2,7 +2,7 @@ import oracledb
 import os
 import logging
 import sys
-from logger_config import setup_logging
+from modules.logger_config import setup_logging
 
 setup_logging()
 
@@ -59,11 +59,13 @@ def process_study_key(config, study_key):
         final_path = os.path.join(unc_root, pathname, filename)
         final_path = os.path.abspath(os.path.normpath(final_path))
 
-        # Verify file existence
-        if not os.path.exists(final_path):
-            logging.error(f"File not found at constructed path: {final_path}")
-            sys.exit(1)
+        # --- REMOVED FILE EXISTENCE CHECK --- 
+        # Verification should happen after potential authentication in main.py
+        # if not os.path.exists(final_path):
+        #     logging.error(f"File not found at constructed path: {final_path}")
+        #     sys.exit(1)
 
+        logging.info(f"Constructed potential DICOM path: {final_path}")
         return final_path
     finally:
         cursor.close()
