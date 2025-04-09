@@ -1,0 +1,32 @@
+{% extends 'study_dashboard/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    {% if studies %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Study Key</th>
+                    <th>Status</th>
+                    <th>Received</th>
+                    <th>Last Updated</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for study in studies %}
+                <tr>
+                    <td>{{ study.study_key }}</td>
+                    <td class="status-{{ study.status|lower }}">{{ study.status }}</td>
+                    <td>{{ study.received_timestamp|date:"Y-m-d H:i:s" }} UTC</td>
+                    <td>{{ study.last_updated_timestamp|date:"Y-m-d H:i:s" }} UTC</td>
+                    <td><a href="{% url 'study_dashboard:study_detail' study.study_key %}">View Details</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No studies found.</p>
+    {% endif %}
+{% endblock %} 
