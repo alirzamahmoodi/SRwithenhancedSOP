@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Audio Transcriber Dashboard{% endblock %}</title>
+    <!-- Simple CSS for structure - Consider using Bootstrap or Tailwind later -->
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        header { background-color: #333; color: #fff; padding: 10px 0; text-align: center; margin-bottom: 20px; border-radius: 8px 8px 0 0; }
+        header h1 { margin: 0; }
+        nav a { color: #eee; text-decoration: none; margin: 0 10px; }
+        nav a:hover { text-decoration: underline; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #e9e9e9; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .status-received { color: gray; }
+        .status-processing_query, .status-processing_audio, .status-transcribing { color: orange; font-weight: bold; }
+        .status-completed, .status-processing_complete, .status-processing_complete_sr, .status-processing_complete_stored { color: green; font-weight: bold; }
+        .status-error { color: red; font-weight: bold; }
+        .detail-view dt { font-weight: bold; margin-top: 10px; }
+        .detail-view dd { margin-left: 20px; margin-bottom: 10px; }
+        pre { background-color: #eee; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+        footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Audio Transcriber Service</h1>
+            <nav>
+                 <a href="{% url 'study_dashboard:study_list' %}">Status Dashboard</a> |
+                 <a href="{% url 'admin:index' %}">Admin Interface</a>
+            </nav>
+        </header>
+
+        <main>
+            <h2>{{ page_title|default:"Dashboard" }}</h2>
+            {% block content %}
+            <!-- Page-specific content goes here -->
+            {% endblock %}
+        </main>
+
+        <footer>
+            SRwithenhancedSOP Dashboard
+        </footer>
+    </div>
+</body>
+</html> 

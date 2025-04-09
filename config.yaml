@@ -18,3 +18,12 @@ LOGGING_LEVELS:
 ENCAPSULATE_TEXT_AS_ENHANCED_SR: "OFF"
 STORE_TRANSCRIBED_REPORT: "ON"
 PRINT_GEMINI_OUTPUT: "ON"
+
+# ----------------- MongoDB Configuration -----------------
+MONGODB_URI: "mongodb://localhost:27017/" # Standard MongoDB connection URI
+MONGODB_DATABASE: "audio_transcriber_db" # Name for the database
+
+# ----------------- Network Share Configuration (Optional) -----------------
+# Credentials for accessing UNC paths like \\server\share if needed
+SHARE_USERNAME: ".\\persiangulfadmin"  # Use double backslash for literal backslash in YAML if needed, or format as needed by WNetAddConnection2
+SHARE_PASSWORD: "Raoufsoft1003"

@@ -1,0 +1,48 @@
+{% extends 'study_dashboard/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h3>Study Details</h3>
+    <dl class="detail-view">
+        <dt>Study Key</dt>
+        <dd>{{ study.study_key }}</dd>
+
+        <dt>Status</dt>
+        <dd class="status-{{ study.status|lower }}">{{ study.status }}</dd>
+
+        <dt>DICOM Path</dt>
+        <dd>{{ study.dicom_path|default:"N/A" }}</dd>
+
+        <dt>Received Timestamp</dt>
+        <dd>{{ study.received_timestamp|date:"Y-m-d H:i:s" }} UTC</dd>
+
+        <dt>Last Updated Timestamp</dt>
+        <dd>{{ study.last_updated_timestamp|date:"Y-m-d H:i:s" }} UTC</dd>
+
+        {% if study.status == 'error' and study.error_message %}
+        <dt>Error Message</dt>
+        <dd><pre>{{ study.error_message }}</pre></dd>
+        {% endif %}
+    </dl>
+
+    <hr>
+
+    <h3>Transcriptions</h3>
+    {% if transcriptions %}
+        {% for transcription in transcriptions %}
+            <h4>Transcription at {{ transcription.transcription_timestamp|date:"Y-m-d H:i:s" }} UTC</h4>
+            <dl class="detail-view">
+                <dt>SR Path</dt>
+                <dd>{{ transcription.sr_path|default:"N/A" }}</dd>
+                
+                <dt>Report Text</dt>
+                <dd><pre>{{ transcription.report_text }}</pre></dd>
+            </dl>
+        {% endfor %}
+    {% else %}
+        <p>No transcriptions found for this study.</p>
+    {% endif %}
+
+    <p><a href="{% url 'study_dashboard:study_list' %}">&laquo; Back to Study List</a></p>
+{% endblock %} 

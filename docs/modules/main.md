@@ -1,111 +1,81 @@
-
-# Main Application Module
+# Main Application Module (`main.py`)
 
 ## Purpose
-Orchestrates the complete Enhanced SR processing pipeline. Handles both CLI and monitoring modes, manages database connections, and coordinates all system components.
 
-## Class Overview
-```python
-class DatabaseMonitor:
-    """
-    <mcsymbol name="DatabaseMonitor" filename="main.py" path="e:\SRwithenhancedSOP\main.py" startline="35" type="class"></mcsymbol>
-    Continuous database watcher for new studies
-    
-    Args:
-        config (dict): Application configuration
-    """
-    
-    def start_monitoring(self):
-        """
-        <mcsymbol name="DatabaseMonitor.start_monitoring" filename="main.py" path="e:\SRwithenhancedSOP\main.py" startline="66" type="function"></mcsymbol>
-        Initiates polling of TREPORT table for studies needing processing
-        """
-```
+Orchestrates the complete audio transcription processing pipeline. It serves as the main entry point, handling command-line arguments for different operational modes (single study vs. continuous monitoring), loading configuration, initializing database connections (MongoDB and potentially Oracle for monitoring), and coordinating calls to various modules to perform the transcription workflow.
 
-## Core Functions
-```python
-def run_pipeline(study_key: str) -> None:
-    """
-    <mcsymbol name="run_pipeline" filename="main.py" path="e:\SRwithenhancedSOP\main.py" startline="113" type="function"></mcsymbol>
-    Executes full processing workflow for a single study
-    
-    Workflow:
-    1. Path resolution via <mcsymbol name="process_study_key" filename="query.py" path="e:\SRwithenhancedSOP\query.py" startline="9" type="function"></mcsymbol>
-    2. Audio extraction using <mcsymbol name="ExtractAudio.extract_audio" filename="extract_audio.py" path="e:\SRwithenhancedSOP\extract_audio.py" startline="12" type="function"></mcsymbol>
-    3. AI transcription via <mcsymbol name="Transcribe.transcribe" filename="transcribe.py" path="e:\SRwithenhancedSOP\transcribe.py" startline="18" type="function"></mcsymbol>
-    4. Result storage with <mcsymbol name="StoreTranscribedReport.store_transcribed_report" filename="store_transcribed_report.py" path="e:\SRwithenhancedSOP\store_transcribed_report.py" startline="9" type="function"></mcsymbol>
-    """
-```
+## Core Function: `run_pipeline(study_key)`
+
+This function executes the full processing workflow for a single study identified by `study_key`.
+
+**Workflow:**
+
+1.  **Update Status (Start):** Updates the study status to `processing_query` in MongoDB via `database_operations.update_study_status`.
+2.  **Get Path:** Calls `query.process_study_key` to retrieve the potential DICOM file path from the Oracle database based on the `study_key`.
+3.  **Connect to Share (Conditional):**
+    *   Checks if the retrieved path is a UNC path (`\\server\share\...`).
+    *   If it is, and if `SHARE_USERNAME`/`SHARE_PASSWORD` are configured, calls `smb_connect.connect_to_share` to establish an authenticated connection to the network share.
+    *   If authentication fails, updates status to `error` in MongoDB and exits.
+4.  **Update Status (Audio):** Updates status to `processing_audio` in MongoDB, storing the `dicom_path`.
+5.  **Extract Audio:** Calls `extract_audio.extract_audio`, passing the file path. This step accesses the file system (potentially using the authenticated share connection).
+6.  **Update Status (Transcribing):** Updates status to `transcribing` in MongoDB.
+7.  **Transcribe:** Calls `transcribe.transcribe`, passing the path to the temporary audio file extracted in the previous step.
+8.  **Handle Results:**
+    *   If transcription is successful (`report_list` is generated):
+        *   Calls `database_operations.save_transcription` to store the results in MongoDB.
+        *   Updates status to `completed` (or variants like `processing_complete_sr` if SR encapsulation is enabled) in MongoDB.
+        *   (Optional) Calls `encapsulate_text_as_enhanced_sr` if enabled.
+        *   (Optional) Calls `store_transcribed_report` (legacy storage) if enabled.
+    *   If transcription fails (`report_list` is empty or None):
+        *   Updates status to `error` in MongoDB with an appropriate message.
+9.  **Error Handling:** A `try...except` block wraps the main workflow. Catches specific errors like `FileNotFoundError` and general `Exception`. Updates status to `error` in MongoDB upon failure.
+10. **Cleanup:** A `finally` block ensures temporary audio files are deleted.
+
+## Core Function: `main()`
+
+*   Parses command-line arguments (`STUDY_KEY` or `--monitor`).
+*   Loads configuration from `config.yaml`.
+*   Initializes logging using `logger_config.setup_logging`.
+*   Establishes the initial MongoDB connection via `database_operations.connect_db`.
+*   **Monitor Mode (`--monitor`):**
+    *   Instantiates `DatabaseMonitor`.
+    *   Calls `monitor.start_monitoring()`, which polls the Oracle DB and triggers `run_pipeline` (via subprocess) for new studies.
+*   **Single Study Mode (`STUDY_KEY` provided):**
+    *   Directly calls `run_pipeline(args.STUDY_KEY)`.
 
 ## Key Functionality
-1. **Operation Modes**
-   - **CLI Mode**: Process single studies via command line
-   - **Monitor Mode**: Continuous database polling (REPORT_STAT=3010)
-   - Self-reloading architecture for compiled EXEs
 
-2. **Resource Management**
-   - Oracle connection pooling
-   - Thread-safe queue processing
-   - Temporary file cleanup
-
-3. **Deployment Features**
-   - PyInstaller compatibility
-   - Cross-environment path resolution
-   - Config-driven Oracle client initialization
-
-## Configuration Requirements
-```yaml
-# From <mcfile name="config.yaml" path="e:\SRwithenhancedSOP\config.yaml"></mcfile>
-oracle:
-  host: "OracleServerUrl"                # Database server address
-  port: 1521                        # Listener port
-  service_name: "persiangulf"            # TNS service name
-  username: "dodeulbyeol"            # Application account
-  password: "secure_password"       # Credential
-
-monitor:
-  poll_interval: 60                 # Seconds between DB checks
-```
-
-## Error Handling
-| Error Scope         | Recovery Mechanism                |
-|---------------------|------------------------------------|
-| Database Connection | Exponential backoff retries       |
-| Subprocess Failures | Queue requeuing with attempt log  |
-| File System Errors  | Network share reconnection logic  |
-| API Timeouts        | Circuit breaker pattern           |
+*   **Dual Operation Modes:** Supports processing single studies via CLI or continuously monitoring an Oracle database.
+*   **Configuration Driven:** Behavior is controlled via `config.yaml`.
+*   **Status Tracking:** Uses `database_operations` to log detailed status updates for each study in MongoDB.
+*   **Network Authentication:** Integrates `smb_connect` to handle authentication for accessing files on network shares.
+*   **Modular Orchestration:** Calls functions from various modules (`query`, `extract_audio`, `transcribe`, etc.) in sequence.
+*   **Robust Error Handling:** Includes specific and general exception handling within the pipeline to log errors and update study status appropriately.
 
 ## Dependencies
-```text
-- oracledb: Database connectivity
-- pyinstaller: Executable packaging
-- threading: Concurrent processing
-- argparse: CLI interface management
-```
+
+*   Standard libraries: `sys`, `argparse`, `yaml`, `logging`, `subprocess`, `time`, `os`.
+*   Project modules: `database_monitor`, `query`, `extract_audio`, `transcribe`, `store_transcribed_report`, `logger_config`, `database_operations`, `smb_connect`.
+*   Third-party libraries via `environment.yml`: `oracledb` (used by monitor/query), `pymongo` (used by database_operations).
 
 ## Usage Examples
+
 ```bash
+# Activate environment first
+conda activate google-ai
+
 # Single study processing
 python main.py STUDY_2024_12345
 
 # Monitor mode (service operation)
 python main.py --monitor
-
-# Compiled executable usage
-audio_transcriber.exe --monitor
 ```
-
-## Module Components
-- [Database Monitor](database_monitor.md)
-- [Logger Configuration](logger_config.md)
-- [Encapsulate SR](encapsulate_text_as_enhanced_sr.md)
-- [Query Processing](query.md)
-- [Audio Extraction](extract_audio.md)
-- [Transcription Engine](transcribe.md)
-- [Report Storage](store_transcribed_report.md)
 
 ## Cross References
 - [System Architecture](../high_level/architecture.md)
 - [Configuration Reference](../high_level/config_reference.md)
 - [Installation Guide](../high_level/installation.md)
-```
+- [Module: database_operations](database_operations.md)
+- [Module: smb_connect](smb_connect.md)
+- [Module: query](query.md)
+- [Module: database_monitor](database_monitor.md)
