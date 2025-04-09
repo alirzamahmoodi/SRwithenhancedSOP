@@ -1,91 +1,54 @@
-# Audio Extraction Module
+# Audio Extraction Module (`extract_audio.py`)
 
 ## Purpose
-Handles extraction of audio data from DICOM waveform sequences. Converts DICOM waveform data to standard WAV format for processing by subsequent transcription components.
 
-## Class Overview
-```python
-class ExtractAudio:
-    """
-    <mcsymbol name="ExtractAudio" filename="extract_audio.py" path="e:\SRwithenhancedSOP\extract_audio.py" startline="7" type="class"></mcsymbol>
-    Main processor for DICOM audio extraction
-    
-    Args:
-        config (dict): Configuration dictionary from config.yaml
-    """
-```
+Handles the extraction of audio data from DICOM files, specifically targeting waveform sequences. It reads the DICOM file, extracts relevant audio metadata and waveform data, and converts/saves it as a standard WAV audio file for processing by the transcription module.
 
-## Main Method
-```python
-def extract_audio(self, dcm_path: str) -> str:
-    """
-    <mcsymbol name="ExtractAudio.extract_audio" filename="extract_audio.py" path="e:\SRwithenhancedSOP\extract_audio.py" startline="12" type="function"></mcsymbol>
-    Core method that performs the audio extraction workflow
-    
-    Parameters:
-        dcm_path (str): Full path to input DICOM file
-    
-    Returns:
-        str: Path to generated WAV file
-    
-    Raises:
-        FileNotFoundError: Missing input DICOM file
-        InvalidDicomError: Corrupted/non-compliant DICOM
-        AttributeError: Missing required DICOM fields
-    """
-```
+## Class: `ExtractAudio`
+
+*   Encapsulates the logic for audio extraction.
+*   Initialized with the application `config` dictionary (though it may not use any specific config values directly).
+
+## Main Method: `extract_audio(self, dcm_path)`
+
+*   **Purpose:** Performs the audio extraction workflow.
+*   **Parameters:**
+    *   `dcm_path` (str): Full path to the input DICOM file. This path should already be validated or accessible (e.g., via prior authentication using `smb_connect` if it's a UNC path).
+*   **Returns:**
+    *   `str`: Path to the temporary WAV file generated.
+*   **Raises:**
+    *   `FileNotFoundError`: If the input `dcm_path` does not exist or is inaccessible (could indicate an issue with the path itself or underlying permissions/authentication if `smb_connect` failed silently or wasn't needed/used).
+    *   `pydicom.errors.InvalidDicomError`: If the file is not a valid DICOM file.
+    *   `AttributeError` / `KeyError`: If required DICOM tags (like `WaveformSequence`, `WaveformData`, `ChannelSampleRate`) are missing.
+    *   Other file I/O errors.
+*   **Workflow:**
+    1.  Attempts to read the DICOM file at `dcm_path` using `pydicom.dcmread()`.
+    2.  Validates the presence and extracts data from necessary tags (e.g., `WaveformSequence`, `WaveformData`, `ChannelSampleRate`).
+    3.  Converts the raw `WaveformData` into a suitable format (e.g., NumPy array).
+    4.  Generates a temporary WAV filename (often based on the input filename or study key).
+    5.  Writes the audio data to the temporary WAV file using appropriate libraries (e.g., `scipy.io.wavfile.write`).
+    6.  Returns the path to the created WAV file.
 
 ## Key Functionality
-1. **File Handling**
-   - Windows long path support (>260 characters)
-   - File existence verification
-   - Retry logic for file access contention
 
-2. **DICOM Processing**
-   - Validates presence of `WaveformSequence`
-   - Extracts `WaveformData` and `SamplingFrequency`
-   - Converts raw data to numpy array
-
-3. **Output Generation**
-   - Creates WAV file in same directory as input
-   - Maintains original audio fidelity
-   - Handles byte ordering and data formatting
-
-## Configuration Requirements
-```yaml
-# From <mcfile name="config.yaml" path="e:\SRwithenhancedSOP\config.yaml"></mcfile>
-storage:
-  paths:
-    dicom_input: "/path/to/dicom"  # Source directory for DICOM files
-
-logging:
-  level: "INFO"  # Controls verbosity of extraction logs
-```
-
-## Error Handling
-| Error Type               | Cause                           | Resolution                     |
-|--------------------------|----------------------------------|--------------------------------|
-| `FileNotFoundError`      | Missing DICOM file              | Verify file path in PACS       |
-| `InvalidDicomError`       | Corrupted DICOM data            | Validate DICOM compliance      |
-| `AttributeError`         | Missing waveform data           | Check modality type (must be SR)|
+*   **DICOM Parsing:** Reads and interprets DICOM file structure using `pydicom`.
+*   **Waveform Extraction:** Specifically targets and extracts embedded audio waveform data.
+*   **WAV Conversion:** Converts the raw DICOM audio data into a standard WAV format.
+*   **File Access:** Requires read access to the input DICOM file path and write access to create the temporary WAV file.
 
 ## Dependencies
-```text
-- pydicom: DICOM file parsing
-- numpy: Audio data manipulation
-- scipy: WAV file generation
-```
 
-## Usage Example
-```python
-from extract_audio import ExtractAudio
+*   `pydicom`: For reading DICOM files.
+*   `numpy`: For numerical manipulation of audio data.
+*   `scipy`: (Likely `scipy.io.wavfile`) For writing WAV files.
+*   `os`, `tempfile`: For path manipulation and temporary file creation.
+*   `logging`: For logging progress and errors.
 
-processor = ExtractAudio(config=app_config)
-wav_path = processor.extract_audio("input.dcm")
-```
+## Integration
+
+*   Called by `main.py` within the `run_pipeline` function after the path is obtained from `query.py` and potentially after authentication via `smb_connect.py`.
+*   The returned WAV file path is passed to the `transcribe.py` module.
 
 ## Related Documents
-- [System Workflow](high_level/workflow.md)
-- [DICOM Processing Guide](modules/main.md)
-- [Configuration Reference](high_level/config_reference.md)
-```
+- [System Architecture](../high_level/architecture.md)
+- [Main Workflow](main.md)

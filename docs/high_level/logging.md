@@ -1,10 +1,108 @@
-
-# System Debugging Guide
+# System Logging and Debugging Guide
 
 ## Logging Architecture
-- **Three-tier logging**: Basic (INFO), Detailed (DEBUG), Error (ERROR)
-- **Rotation**: 5MB file size with 2 backups
-- **Outputs**: Combined file (app.log) + console
+
+The application utilizes Python's built-in `logging` module, configured centrally by `modules/logger_config.py`.
+
+*   **Configuration:** Primarily driven by `LOG_LEVEL` and `LOG_FILE` settings in `config.yaml`.
+*   **Outputs:** 
+    *   **File:** Logs messages to the file specified by `LOG_FILE` (e.g., `app.log`). The level for file logging is determined by the `LOG_LEVEL` setting.
+    *   **Console:** Logs messages to standard output (the terminal). The level for console output is also determined by `LOG_LEVEL`.
+*   **Level:** The `LOG_LEVEL` setting (e.g., "DEBUG", "INFO", "WARNING", "ERROR") controls the minimum severity of messages captured by both handlers. "DEBUG" is the most verbose, while "ERROR" is the least.
+*   **Format:** Log messages typically include timestamp, log level, module name (or root), and the message itself.
+*   **Rotation:** File rotation (limiting size/backups) might be implemented within `logger_config.py` (e.g., using `RotatingFileHandler`), but this is not explicitly configurable via `config.yaml` in the current setup. Check the `logger_config.py` source for details.
+
+## Key Log Locations and Interpretation
+
+*   **`app.log` (or configured `LOG_FILE`):** This is the primary file for detailed debugging. Set `LOG_LEVEL: "DEBUG"` in `config.yaml` to capture the most information.
+*   **Console Output:** Provides real-time feedback, typically at the "INFO" level or higher by default.
+
+## Interpreting Common Log Messages
+
+*(Note: Specific messages depend on the implementation in each module. This is a general guide.)*
+
+| Module                 | Level   | Example Message Fragment                        | Possible Meaning                                                        |
+|------------------------|---------|-------------------------------------------------|-------------------------------------------------------------------------|
+| **Root/Main**          | INFO    | `Starting database monitor mode...`             | Application started with `--monitor` flag.                                |
+|                        | INFO    | `Successfully connected to MongoDB database...` | Initial connection to MongoDB succeeded.                                |
+|                        | INFO    | `DICOM file path: \\server\share\...`           | Path constructed by `query.py`.                                         |
+|                        | INFO    | `Attempting network share connection...`        | `smb_connect` is trying to authenticate to a UNC path.                  |
+|                        | INFO    | `Network share connection successful...`        | Authentication to share succeeded or connection already existed.        |
+|                        | INFO    | `Audio extracted and saved to: ... .wav`        | `extract_audio` successfully created the temporary WAV file.            |
+|                        | INFO    | `Transcription saved for study ...`             | `database_operations` saved results to MongoDB `transcriptions` collection. |
+|                        | INFO    | `Updated study ... status to ...`               | `database_operations` updated the status in MongoDB `studies` collection. |
+|                        | INFO    | `Temporary audio file deleted...`             | Successful cleanup in `main.py`'s `finally` block.                     |
+|                        | WARNING | `UNC path detected ... but SHARE_USERNAME...`   | UNC path needs authentication, but credentials missing in `config.yaml`.  |
+|                        | WARNING | `Connection to ... likely already exists...`    | `smb_connect` found an existing (possibly conflicting) connection.        |
+|                        | WARNING | `Failed to delete temporary audio file...`      | Cleanup failed, temporary file might remain.                            |
+|                        | ERROR   | `Failed to authenticate to network share...`    | `smb_connect` failed (check credentials, path, permissions).            |
+|                        | ERROR   | `Pipeline error (FileNotFound)...`              | File access failed after path construction/auth (check path, permissions).|
+|                        | ERROR   | `Pipeline error for study key ...: ...`       | General error during `run_pipeline`. Check message/traceback.           |
+| **database_monitor**   | INFO    | `Connected to Oracle database for monitoring.`  | Monitor successfully connected to Oracle.                               |
+|                        | INFO    | `Detected study ... Adding to queue.`           | New study found in Oracle.                                              |
+|                        | INFO    | `Added study ... to processing queue.`          | MongoDB status updated to 'received', key added to queue.               |
+|                        | INFO    | `Processing study key from queue: ...`          | Worker thread picked up a study.                                        |
+|                        | INFO    | `Subprocess for ... completed successfully.`    | `main.py <study_key>` subprocess finished without error code.           |
+|                        | ERROR   | `Database connection failed: ...`             | Monitor could not connect to Oracle.                                    |
+|                        | ERROR   | `Error during monitoring query: ...`          | Error executing the polling query against Oracle.                       |
+|                        | ERROR   | `Subprocess for ... failed with code ...`       | `main.py <study_key>` subprocess exited with an error. Check stderr.    |
+| **query**              | INFO    | `Creating DSN for Oracle connection.`           | Preparing Oracle connection string.                                     |
+|                        | INFO    | `Connecting to Oracle database.`                | Attempting connection.                                                  |
+|                        | INFO    | `Constructed potential DICOM path: ...`         | Path string successfully built.                                         |
+|                        | ERROR   | `No TREPORT record found...`                  | Missing data in Oracle required for path construction.                  |
+| **smb_connect**        | INFO    | `Attempting connection to network share: ...`   | Starting authentication attempt.                                        |
+|                        | INFO    | `Successfully established connection to ...`    | `WNetAddConnection2` call succeeded.                                    |
+|                        | ERROR   | `Authentication failed for ...`                 | Bad username/password (Error 1326).                                     |
+|                        | ERROR   | `Network path not found: ...`                   | Bad server/share name (Error 53).                                       |
+| **extract_audio**      | INFO    | `Audio extracted and saved to: ...`             | Success.                                                                |
+|                        | ERROR   | `FileNotFoundError: ...`                        | Cannot access the input DICOM path provided by `main.py`.               |
+|                        | ERROR   | `DICOM does not contain WaveformSequence`       | Input file is missing required audio data.                              |
+| **transcribe**         | INFO    | *(Specific to API)*                             | Successful steps in API interaction.                                    |
+|                        | ERROR   | *(Specific to API)*                             | API authentication, connection, or processing errors.                   |
+| **database_operations**| INFO    | `Successfully connected to MongoDB...`          | Initial connection established.                                         |
+|                        | INFO    | `Created new study record for ...`            | First status update for a study (upsert).                             |
+|                        | INFO    | `Updated study ... status to ...`               | Subsequent status update.                                               |
+|                        | INFO    | `Transcription saved for study ...`             | Result saved.                                                           |
+|                        | ERROR   | `Could not connect to MongoDB: ...`             | Initial connection failed.                                              |
+|                        | ERROR   | `Database connection not available...`          | Attempted DB operation when connection is down.                         |
+|                        | ERROR   | `Failed to update status for study ...`       | Error during MongoDB `update_one`.                                      |
+|                        | ERROR   | `Failed to save transcription for study ...`    | Error during MongoDB `insert_one`.                                      |
+
+## Debugging Scenarios
+
+**Scenario 1: File Not Found on Network Share**
+*   **Check Logs For:**
+    *   `query`: `Constructed potential DICOM path: \\server\share\...` (Path looks correct?)
+    *   `main`: `Attempting network share connection...` (Did it try?)
+    *   `smb_connect`: Any errors like `Authentication failed` or `Network path not found`? (Credentials/Path issue?)
+    *   `main`: `Pipeline error (FileNotFound)...` (If auth seemed okay, does the *specific file* exist? Permissions on the file itself?)
+*   **Actions:** Verify share path, credentials in `config.yaml`, user permissions on the share/file, file existence.
+
+**Scenario 2: MongoDB Connection Failure**
+*   **Check Logs For:**
+    *   `database_operations`: `Could not connect to MongoDB: ...` (Check error details - refused? timeout?)
+    *   Subsequent `database_operations`: `Database connection not available...`
+*   **Actions:** Ensure MongoDB server is running, accessible from where the script runs, `MONGODB_URI` in `config.yaml` is correct, check firewalls.
+
+**Scenario 3: Oracle Connection Failure (Monitor)**
+*   **Check Logs For:**
+    *   `database_monitor`: `Database connection failed: ...`
+*   **Actions:** Ensure Oracle DB is running, accessible, `ORACLE_*` settings in `config.yaml` are correct, check firewalls, check Oracle client setup if not using thin client.
+
+**Scenario 4: Transcription API Error**
+*   **Check Logs For:**
+    *   `transcribe`: Errors mentioning API keys, authentication, connection timeouts, service unavailable, specific API error codes.
+*   **Actions:** Verify API key in `config.yaml`, check network connectivity to the API endpoint, check API service status dashboard.
+
+## Log Configuration (`config.yaml`)
+
+```yaml
+# ----------------- Logging Configuration -----------------
+LOG_LEVEL: "INFO" # DEBUG, INFO, WARNING, ERROR
+LOG_FILE: "app.log"
+```
+
+**To Enable Debug Logging:** Change `LOG_LEVEL` to `"DEBUG"` in `config.yaml` and restart the application.
 
 ## Complete Log Statements Catalog
 
@@ -71,41 +169,3 @@
 | INFO | `"Encapsulating text as Enhanced SR..."` | Process start | SR Encapsulation |
 | DEBUG | `"DICOM file read successfully"` | File validation | SR Encapsulation |
 | ERROR | `"Failed to write WAV file"` | Output failures | SR Encapsulation |
-
-## Debugging Scenarios
-
-**Scenario 1: Missing DICOM Audio**
-```log
-ERROR - extract_audio - DICOM does not contain WaveformSequence
-DEBUG - extract_audio - Applying long path prefix for Windows
-```
-**Solution:** Verify DICOM contains waveform data, check Windows path length
-
-**Scenario 2: Database Connection Issues**
-```log
-ERROR - database_monitor - Database connection failed: ORA-12541
-INFO - query - Creating DSN for Oracle connection
-```
-**Solution:** Validate Oracle credentials in config.yaml, check network connectivity
-
-## Log Configuration Reference
-```yaml
-LOGGING_LEVELS:
-  basic: INFO    # Console level
-  detailed: DEBUG # File logging
-  error: ERROR   # Critical alerts
-```
-
-**Trace Enablement:** 
-```python
-# Enable full debug tracing
-logging.getLogger('detailed').setLevel(logging.DEBUG)
-logging.getLogger().setLevel(logging.DEBUG)
-```
-
-**Audit Trail Fields:**
-- Timestamp
-- Module name
-- Study key (where applicable)
-- File paths
-- Database keys
