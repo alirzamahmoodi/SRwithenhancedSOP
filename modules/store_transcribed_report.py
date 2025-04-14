@@ -48,8 +48,16 @@ class StoreTranscribedReport:
 
         dsn = oracledb.makedsn(self.config["ORACLE_HOST"], self.config["ORACLE_PORT"], self.config["ORACLE_SERVICE_NAME"])
         self.logger.debug(f"DSN created: {dsn}")
+
+        connection = None # Initialize connection
+        cursor = None # Initialize cursor
         try:
-            connection = oracledb.connect(self.config["ORACLE_USERNAME"], self.config["ORACLE_PASSWORD"], dsn)
+            # Use keyword arguments for connect
+            connection = oracledb.connect(
+                user=self.config["ORACLE_USERNAME"],
+                password=self.config["ORACLE_PASSWORD"],
+                dsn=dsn
+            )
             self.logger.debug("Oracle connection established.")
             cursor = connection.cursor()
             self.logger.debug("Cursor created.")
@@ -143,7 +151,24 @@ class StoreTranscribedReport:
         except Exception as e:
             self.logger.error(f"Failed to store transcribed report: {str(e)}")
             self.logger.debug(traceback.format_exc())
+            # Rollback if commit failed or error occurred before commit
+            if connection:
+                try:
+                    connection.rollback()
+                    self.logger.info("Transaction rolled back due to error.")
+                except Exception as rb_err:
+                    self.logger.error(f"Error during rollback: {rb_err}")
         finally:
-            cursor.close()
-            connection.close()
-            self.logger.debug("Cursor and connection closed.")
+            # Close cursor and connection only if they were successfully created
+            if cursor:
+                try:
+                    cursor.close()
+                    self.logger.debug("Cursor closed.")
+                except Exception as c_err:
+                    self.logger.error(f"Error closing cursor: {c_err}")
+            if connection:
+                try:
+                    connection.close()
+                    self.logger.debug("Connection closed.")
+                except Exception as conn_err:
+                    self.logger.error(f"Error closing connection: {conn_err}")
