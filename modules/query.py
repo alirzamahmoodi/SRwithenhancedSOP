@@ -19,18 +19,21 @@ def process_study_key(config, study_key):
     logging.info("Creating cursor for database operations.")
     cursor = connection.cursor()
     try:
-        # Retrieve REPORT_KEY and REPORT_STAT for the given STUDY_KEY.
+        # Retrieve REPORT_KEY for the given STUDY_KEY where REPORT_STAT indicates readiness.
         cursor.execute(
-            "SELECT REPORT_KEY, REPORT_STAT FROM TREPORT WHERE STUDY_KEY = :study_key",
+            "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key AND REPORT_STAT = 3010",
             study_key=study_key
         )
-        row = cursor.fetchone()
+        row = cursor.fetchone() # Get the first matching report key
         if not row:
-            logging.error(f"No TREPORT record found for STUDY_KEY={study_key}")
+            # Update error message for clarity
+            logging.error(f"No TREPORT record found for STUDY_KEY={study_key} with REPORT_STAT=3010")
+            # Consider returning None or raising a specific exception instead of sys.exit(1)
+            # For now, keep sys.exit to match previous behavior on failure.
             sys.exit(1)
-        report_key, report_stat = row
+        report_key = row[0] # Extract the report_key
 
-        # Query TDICTATION to get PATHNAME, FILENAME and LSTORAGE_KEY
+        # Query TDICTATION using the correctly identified report_key
         cursor.execute(
             "SELECT PATHNAME, FILENAME, LSTORAGE_KEY FROM TDICTATION WHERE REPORT_KEY = :report_key",
             report_key=report_key
