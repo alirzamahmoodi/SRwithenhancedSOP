@@ -4,7 +4,7 @@ GEMINI_API_KEY: "AIzaSyCtch3XLoQtYSbQuAFiHhuluqrzWr88rH4"
 # PROCESSED_SPOOL_FOLDER: "C:\\RaoufSoft\\Spool\\200\\Processed" #You have to create a register service to listen for processed dictation DICOM files here.
 # SR_OUTPUT_FOLDER: "C:\\RaoufSoft\\Spool\\200\\SR" #You have to create a register service to listen for DICOM SR files here.
 MODEL_NAME: "gemini-2.0-flash" #Variants could be "gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-thinking-exp"
-ORACLE_HOST: "172.31.100.60"
+ORACLE_HOST: "127.0.0.1"
 ORACLE_PORT: 1521
 ORACLE_SERVICE_NAME: "persiangulf"
 ORACLE_USERNAME: "dodeulbyeol"
