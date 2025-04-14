@@ -14,6 +14,7 @@ class DatabaseMonitor:
         self.is_running = True
         self.queue = queue.Queue()
         self.poll_interval = 60  # seconds
+        self.attempted_studies = set() # Track studies attempted in this session
 
     def worker(self):
         """Worker thread that processes study keys from the queue."""
@@ -97,7 +98,7 @@ class DatabaseMonitor:
                 for row in rows:
                     study_key = row[0]
                     # Check if we already processed this key in this batch
-                    if study_key not in processed_keys_in_batch:
+                    if study_key not in processed_keys_in_batch and study_key not in self.attempted_studies:
                         logging.info(f"Detected study {study_key} with REPORT_STAT '3010'.")
                         # Update status to 'received' in MongoDB *before* adding to queue
                         # This prevents adding it again if monitoring restarts quickly
@@ -105,6 +106,7 @@ class DatabaseMonitor:
                         db_ops.update_study_status(self.config, study_key, "received")
                         self.queue.put(study_key)
                         processed_keys_in_batch.add(study_key)
+                        self.attempted_studies.add(study_key)
                         logging.info(f"Added study {study_key} to processing queue.")
                     else:
                          logging.debug(f"Skipping study {study_key} already added in this batch.")
