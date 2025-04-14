@@ -45,14 +45,20 @@ class DatabaseMonitor:
 
             try:
                 # Run the main script as a separate process
-                # Consider capturing stdout/stderr if needed for detailed logging
                 process = subprocess.run(args, check=True, capture_output=True, text=True)
                 logging.info(f"Subprocess for {study_key} completed successfully.")
-                logging.debug(f"Subprocess stdout: {process.stdout}")
-                # Status is updated within the subprocess via run_pipeline
+                # Log captured output even on success
+                if process.stdout:
+                    logging.info(f"Subprocess stdout:\n{process.stdout.strip()}")
+                if process.stderr:
+                    logging.warning(f"Subprocess stderr:\n{process.stderr.strip()}")
             except subprocess.CalledProcessError as e:
                 logging.error(f"Subprocess for {study_key} failed with code {e.returncode}.")
-                logging.error(f"Subprocess stderr: {e.stderr}")
+                # Log captured output on error
+                if e.stdout:
+                    logging.error(f"Subprocess stdout:\n{e.stdout.strip()}")
+                if e.stderr:
+                    logging.error(f"Subprocess stderr:\n{e.stderr.strip()}")
                 # Update status to error here as a fallback if the subprocess failed entirely
                 db_ops.update_study_status(self.config, study_key, "error", error_message=f"Subprocess execution failed: {e.stderr[:500]}") # Truncate long errors
             except Exception as e:
