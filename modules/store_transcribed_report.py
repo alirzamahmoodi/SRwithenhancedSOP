@@ -12,13 +12,37 @@ class StoreTranscribedReport:
     def store_transcribed_report(self, study_key, report_list):
         self.logger.info(f"Storing transcribed report for study key: {study_key}")
 
-        # Parse the report_list to extract Reading and Conclusion
+        parsed_report_data = None
+        # Check if report_list is a string that needs parsing, or already parsed data
+        if isinstance(report_list, str):
+            self.logger.debug("report_list is a string, attempting JSON parse.")
+            try:
+                parsed_report_data = json.loads(report_list)
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Failed to parse report_list string as JSON: {e}")
+                self.logger.debug(traceback.format_exc())
+                return
+        elif isinstance(report_list, list):
+            self.logger.debug("report_list is already a list, using directly.")
+            parsed_report_data = report_list
+        else:
+            self.logger.error(f"Unexpected type for report_list: {type(report_list)}. Expected str or list.")
+            return
+
+        # Now extract Reading and Conclusion from the parsed data
         try:
-            report_data = json.loads(report_list)
-            reading = report_data[0].get("Reading", "")
-            conclusion = report_data[1].get("Conclusion", "")
-        except (json.JSONDecodeError, IndexError, KeyError) as e:
-            self.logger.error(f"Failed to parse report_list: {str(e)}")
+            # Ensure parsed_report_data is a list with at least two elements before accessing
+            if not isinstance(parsed_report_data, list) or len(parsed_report_data) < 2:
+                 raise ValueError(f"Parsed report data is not a list with at least two elements. Data: {parsed_report_data}")
+
+            reading = parsed_report_data[0].get("Reading", "")
+            conclusion = parsed_report_data[1].get("Conclusion", "")
+            self.logger.debug(f"Extracted Reading (first 50 chars): '{reading[:50]}...'")
+            self.logger.debug(f"Extracted Conclusion (first 50 chars): '{conclusion[:50]}...'")
+        except (IndexError, KeyError, TypeError, AttributeError, ValueError) as e: # Broader exception catching
+            self.logger.error(f"Failed to extract Reading/Conclusion from parsed data structure: {e}")
+            # Log the problematic structure for debugging
+            self.logger.debug(f"Problematic parsed_report_data structure: {parsed_report_data}")
             self.logger.debug(traceback.format_exc())
             return
 
