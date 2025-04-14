@@ -64,13 +64,14 @@ class StoreTranscribedReport:
 
             # Retrieve REPORT_KEY from TREPORT using the provided study_key.
             cursor.execute(
-                "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key",
+                # Fetch the specific report key that was initially processed (status 3010)
+                "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key AND REPORT_STAT = 3010",
                 study_key=study_key
             )
-            self.logger.debug("Executed query to retrieve REPORT_KEY.")
+            self.logger.debug("Executed query to retrieve specific REPORT_KEY (status 3010).")
             row = cursor.fetchone()
             if not row:
-                self.logger.warning(f"No TREPORT record found for STUDY_KEY={study_key}")
+                self.logger.warning(f"No TREPORT record found for STUDY_KEY={study_key} with initial REPORT_STAT=3010")
                 return
             report_key = row[0]
             self.logger.debug(f"Retrieved REPORT_KEY: {report_key}")
