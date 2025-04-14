@@ -30,8 +30,11 @@ class DatabaseMonitor:
 
             logging.info(f"Processing study key from queue: {study_key}")
 
-            # Simplified path to main.py (assuming it's one level up)
-            main_script_path = os.path.join(os.path.dirname(__file__), "..", "main.py")
+            # Get the project root directory (parent of the 'modules' directory)
+            project_root = os.path.dirname(os.path.dirname(__file__))
+            # Construct the absolute path to main.py
+            main_script_path = os.path.join(project_root, "main.py")
+
             args = [
                 sys.executable,
                 main_script_path,
