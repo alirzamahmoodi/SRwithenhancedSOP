@@ -25,25 +25,21 @@ class DatabaseMonitor:
             try:
                 study_key = self.queue.get(timeout=1)
             except queue.Empty:
+                logging.debug("Worker queue empty, waiting...")
                 continue
 
             logging.info(f"Processing study key from queue: {study_key}")
 
-            # The run_pipeline function (called via subprocess) now handles 
-            # detailed status updates within its execution.
-            # We already marked it as 'received' when adding to the queue.
+            # Simplified path to main.py (assuming it's one level up)
+            main_script_path = os.path.join(os.path.dirname(__file__), "..", "main.py")
+            args = [
+                sys.executable,
+                main_script_path,
+                str(study_key)
+            ]
 
-            # Determine if running as compiled EXE or script
-            main_script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "main.py"))
-            if getattr(sys, 'frozen', False):
-                exe_path = sys.executable
-                args = [exe_path, str(study_key)]
-            else:
-                args = [
-                    sys.executable,
-                    main_script_path,
-                    str(study_key)
-                ]
+            logging.info(f"Attempting to run subprocess for {study_key}: {' '.join(args)}") # Log before running
+
             try:
                 # Run the main script as a separate process
                 # Consider capturing stdout/stderr if needed for detailed logging
@@ -61,6 +57,7 @@ class DatabaseMonitor:
                 db_ops.update_study_status(self.config, study_key, "error", error_message=f"Subprocess runner error: {str(e)}")
 
             self.queue.task_done()
+            logging.info(f"Task marked as done for {study_key}. Worker ready for next item.") # Log after task_done
 
     def start_monitoring(self):
         worker_thread = threading.Thread(target=self.worker, daemon=True)
