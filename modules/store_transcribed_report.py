@@ -31,12 +31,17 @@ class StoreTranscribedReport:
 
         # Now extract Reading and Conclusion from the parsed data
         try:
-            # Ensure parsed_report_data is a list with at least two elements before accessing
-            if not isinstance(parsed_report_data, list) or len(parsed_report_data) < 2:
-                 raise ValueError(f"Parsed report data is not a list with at least two elements. Data: {parsed_report_data}")
+            # Ensure parsed_report_data is a list with at least one element
+            if not isinstance(parsed_report_data, list) or len(parsed_report_data) == 0:
+                 raise ValueError(f"Parsed report data is not a non-empty list. Data: {parsed_report_data}")
 
-            reading = parsed_report_data[0].get("Reading", "")
-            conclusion = parsed_report_data[1].get("Conclusion", "")
+            # Access the first (and only) dictionary in the list
+            report_dict = parsed_report_data[0]
+            if not isinstance(report_dict, dict):
+                raise ValueError(f"First element in parsed report data is not a dictionary. Data: {parsed_report_data}")
+
+            reading = report_dict.get("Reading", "")
+            conclusion = report_dict.get("Conclusion", "")
             self.logger.debug(f"Extracted Reading (first 50 chars): '{reading[:50]}...'")
             self.logger.debug(f"Extracted Conclusion (first 50 chars): '{conclusion[:50]}...'")
         except (IndexError, KeyError, TypeError, AttributeError, ValueError) as e: # Broader exception catching

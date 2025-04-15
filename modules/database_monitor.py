@@ -98,14 +98,14 @@ class DatabaseMonitor:
             try:
                 cursor = connection.cursor()
                 # Ensure query uses correct table/column names from your Oracle DB
-                query = "SELECT STUDY_KEY FROM TREPORT WHERE REPORT_STAT = 3010"
+                query = "SELECT STUDY_KEY FROM TSTUDY WHERE STUDYSTAT = 3010"
                 cursor.execute(query)
                 rows = cursor.fetchall()
                 for row in rows:
                     study_key = row[0]
                     # Check if we already processed this key in this batch
                     if study_key not in processed_keys_in_batch and study_key not in self.attempted_studies:
-                        logging.info(f"Detected study {study_key} with REPORT_STAT '3010'.")
+                        logging.info(f"Detected study {study_key} with STUDYSTAT '3010'.")
                         # Update status to 'received' in MongoDB *before* adding to queue
                         # This prevents adding it again if monitoring restarts quickly
                         # It also provides an initial record for the dashboard
@@ -115,7 +115,7 @@ class DatabaseMonitor:
                         self.attempted_studies.add(study_key)
                         logging.info(f"Added study {study_key} to processing queue.")
                     else:
-                         logging.debug(f"Skipping study {study_key} already added in this batch.")
+                         logging.debug(f"Skipping study {study_key} already attempted or added in this batch.")
 
                 cursor.close()
                 # Commit might not be necessary for SELECT, depends on Oracle config/transactions

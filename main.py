@@ -20,7 +20,7 @@ from modules.store_transcribed_report import StoreTranscribedReport
 from modules.logger_config import setup_logging
 from modules import database_operations as db_ops # Import the new module
 from modules import smb_connect # Import the SMB connection helper
-# from modules.encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
+from modules.encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
@@ -78,7 +78,7 @@ def run_pipeline(study_key):
 
         extract_audio = ExtractAudio(config)
         transcribe = Transcribe(config)
-        # encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
+        encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
         store_transcribed_report = StoreTranscribedReport(config)
 
         # Extract audio
@@ -105,17 +105,21 @@ def run_pipeline(study_key):
                 # Ensure the module is imported if used
                 # from modules.encapsulate_text_as_enhanced_sr import EncapsulateTextAsEnhancedSR
                 # encapsulate_text_as_enhanced_sr = EncapsulateTextAsEnhancedSR(config)
-                # sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_list, final_path)
+                sr_path = encapsulate_text_as_enhanced_sr.encapsulate_text_as_enhanced_sr(report_list, final_path)
                 
-                # Placeholder for actual SR generation call if module exists
-                sr_path = f"/path/to/generated/{study_key}.dcm" # Example path
-                
-                logging.info(f"Enhanced SR saved to: {sr_path}")
-                # Update transcription record with SR path
-                db_ops.save_transcription(config, study_key, report_list, sr_path=sr_path) # Update existing or save again if needed
-                db_ops.update_study_status(config, study_key, "processing_complete_sr") # More specific complete status
+                # Check if SR generation was successful before logging/saving
+                if sr_path:
+                    logging.info(f"Enhanced SR saved to: {sr_path}")
+                    # Update transcription record with SR path
+                    db_ops.save_transcription(config, study_key, report_list, sr_path=sr_path) # Update existing or save again if needed
+                    db_ops.update_study_status(config, study_key, "processing_complete_sr") # More specific complete status
+                else:
+                    logging.error(f"Enhanced SR generation failed for study {study_key}. sr_path is None.")
+                    # Optionally update status to an error specific to SR failure
+                    db_ops.update_study_status(config, study_key, "error", error_message="SR encapsulation failed (returned None)")
+
             except Exception as e:
-                 logging.error(f"Failed during SR encapsulation for {study_key}: {e}")
+                 logging.error(f"Failed during SR encapsulation for {study_key}: {e}", exc_info=True) # Add exc_info for details
                  db_ops.update_study_status(config, study_key, "error", error_message=f"SR encapsulation failed: {e}")
 
 
