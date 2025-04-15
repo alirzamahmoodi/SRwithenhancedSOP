@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implements continuous monitoring of an Oracle database table (`TREPORT`) to detect new studies that require transcription. It manages a processing queue and launches the main pipeline (`main.py`) as a subprocess for each detected study.
+Implements continuous monitoring of an Oracle database table (`TSTUDY`) to detect new studies that require transcription. It manages a processing queue and launches the main pipeline (`main.py`) as a subprocess for each detected study.
 
 ## Key Features & Workflow
 
@@ -11,7 +11,7 @@ Implements continuous monitoring of an Oracle database table (`TREPORT`) to dete
     *   Establishes a connection to the Oracle database using credentials from `config`.
     *   Enters a loop that runs while `self.is_running` is True.
     *   Inside the loop:
-        *   Queries the `TREPORT` table for records with a specific status (e.g., `REPORT_STAT = 3010`).
+        *   Queries the `TSTUDY` table for records with a specific status (e.g., `STUDYSTAT = 3010`).
         *   For each `study_key` found:
             *   Calls `database_operations.update_study_status` to create/update the record in MongoDB with status `received` (this prevents duplicate processing and makes the study visible on the dashboard immediately).
             *   Adds the `study_key` to the internal `queue.Queue`.

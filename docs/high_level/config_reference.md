@@ -23,7 +23,7 @@ dependencies:
 # ----------------- AI Services (Example: Gemini) -----------------
 # Configure based on the needs of modules/transcribe.py
 GEMINI_API_KEY: "your_api_key"  # Replace with your actual API key
-MODEL_NAME: "gemini-1.5-flash" # Or the specific model you intend to use
+MODEL_NAME: "gemini-2.0-flash" # Or the specific model you intend to use
 
 # ----------------- Oracle DB (Monitor Source) -----------------
 ORACLE_HOST: "172.31.100.60" # IP address or hostname of the Oracle server
@@ -48,40 +48,23 @@ MONGODB_DATABASE: "audio_transcriber_db"  # Name of the database to use in Mongo
 SHARE_USERNAME: ".\\persiangulfadmin" # Username (e.g., DOMAIN\\user, .\\user)
 SHARE_PASSWORD: "Raoufsoft1003"      # Password for the network share user
 
-# ----------------- Django Web Dashboard -----------------
-# SECURITY WARNING: Keep the secret key used in production secret!
-# Generate using: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-DJANGO_SECRET_KEY: "django-insecure-placeholder-replace-me-in-production"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DJANGO_DEBUG: True # Set to False for production
-
-# Hosts/domain names that are allowed to access the dashboard
-DJANGO_ALLOWED_HOSTS: [] # E.g., ["localhost", "127.0.0.1", "mydashboard.example.com"]
-
 # ----------------- Core Service Operation -----------------
 # Controls behavior of the main transcription pipeline (main.py)
 ENCAPSULATE_TEXT_AS_ENHANCED_SR: "OFF" # Enable SR DICOM generation ("ON"/"OFF")
 STORE_TRANSCRIBED_REPORT: "ON"         # Enable legacy storage via store_transcribed_report.py ("ON"/"OFF") - Review necessity vs MongoDB
 PRINT_GEMINI_OUTPUT: "ON"              # Print transcription results to console ("ON"/"OFF")
 
-# ----------------- Monitoring Service -----------------
-# Controls behavior of modules/database_monitor.py
-poll_interval: 60 # Seconds between checking Oracle DB for new studies
-
 # ----------------- Logging Configuration -----------------
-# Basic logging setup. See docs/high_level/logging.md for advanced configuration.
-LOG_LEVEL: "INFO" # Overall logging level (e.g., DEBUG, INFO, WARNING, ERROR)
-LOG_FILE: "app.log" # Path to the log file (relative to project root)
+# Defines different logging levels used by logger_config.py
+LOGGING_LEVELS:
+  basic: "INFO"    # Default level for general logging
+  detailed: "DEBUG"  # Level for detailed diagnostic logs
+  error: "ERROR"     # Level for error-specific logs
 
 # --- Deprecated/Replaced Keys (Example) ---
 # These might be leftover from previous versions and can likely be removed
-# LONGTERM_USERNAME: "persiangulfadmin" # Replaced by SHARE_USERNAME
-# LONGTERM_PASSWORD: "secure_password"  # Replaced by SHARE_PASSWORD
-# LOGGING_LEVELS:
-#   basic: "INFO"
-#   detailed: "DEBUG"
-#   error: "ERROR"
+# LONGTERM_USERNAME: "persiangulfadmin" # Replaced by SHARE_USERNAME or unused
+# LONGTERM_PASSWORD: "secure_password"  # Replaced by SHARE_PASSWORD or unused
 ```
 
 ## Configuration Parameters Table
@@ -89,7 +72,7 @@ LOG_FILE: "app.log" # Path to the log file (relative to project root)
 | Section         | Key                           | Required | Purpose                                                              | Notes / Example Values                                           |
 |-----------------|-------------------------------|----------|----------------------------------------------------------------------|------------------------------------------------------------------|
 | AI Services     | `GEMINI_API_KEY`              | Yes      | Authentication key for the transcription API service.                | String (e.g., `AIzaSy...`)                                       |
-| AI Services     | `MODEL_NAME`                  | Yes      | Specific model to use for transcription.                             | String (e.g., `gemini-1.5-flash`)                                |
+| AI Services     | `MODEL_NAME`                  | Yes      | Specific model to use for transcription.                             | String (e.g., `gemini-2.0-flash`)                                |
 | Oracle DB       | `ORACLE_HOST`                 | Yes      | Hostname or IP of the Oracle database server.                        | String (e.g., `172.31.100.60`, `oradb.internal`)                 |
 | Oracle DB       | `ORACLE_PORT`                 | Yes      | Port number for the Oracle listener.                                 | Integer (e.g., `1521`)                                           |
 | Oracle DB       | `ORACLE_SERVICE_NAME`         | Yes      | Oracle Service Name for the target database.                         | String (e.g., `persiangulf`, `orclpdb`)                          |
@@ -100,28 +83,11 @@ LOG_FILE: "app.log" # Path to the log file (relative to project root)
 | MongoDB         | `MONGODB_DATABASE`            | Yes      | Name of the database to use within MongoDB.                          | String (e.g., `audio_transcriber_db`)                            |
 | Network Share   | `SHARE_USERNAME`              | No       | Username to authenticate to network shares (UNC paths).              | String (e.g., `DOMAIN\\user`, `.\user`, `user@domain.com`)       |
 | Network Share   | `SHARE_PASSWORD`              | No       | Password for the network share user.                                 | String                                                           |
-| Django          | `DJANGO_SECRET_KEY`           | Yes      | Secret key for Django cryptographic signing. **Keep secret!**      | Long random string                                               |
-| Django          | `DJANGO_DEBUG`                | Yes      | Enables/disables Django debug mode (tracebacks, etc.).               | `True` / `False`                                                 |
-| Django          | `DJANGO_ALLOWED_HOSTS`        | Yes      | List of allowed hostnames/IPs for accessing the dashboard.           | List of strings (e.g., `["localhost", "1.2.3.4"]`)             |
 | Core Service    | `ENCAPSULATE_TEXT_AS_ENHANCED_SR` | Yes      | Enable/disable DICOM Enhanced SR generation.                       | `"ON"` / `"OFF"`                                                 |
 | Core Service    | `STORE_TRANSCRIBED_REPORT`    | Yes      | Enable/disable legacy report storage (review relevance).           | `"ON"` / `"OFF"`                                                 |
 | Core Service    | `PRINT_GEMINI_OUTPUT`         | Yes      | Print transcription results directly to console.                   | `"ON"` / `"OFF"`                                                 |
-| Monitoring      | `poll_interval`               | Yes      | How often (in seconds) the monitor checks Oracle for new studies.    | Integer (e.g., `60`)                                             |
-| Logging         | `LOG_LEVEL`                   | Yes      | Minimum level of logs to record (DEBUG, INFO, WARNING, ERROR).       | String (e.g., `"INFO"`)                                        |
-| Logging         | `LOG_FILE`                    | Yes      | Name/path for the log file.                                          | String (e.g., `"app.log"`, `"logs/service.log"`)               |
+| SR Generation   | `SR_OUTPUT_FOLDER`            | Yes*     | Directory to save generated Enhanced SR DICOM files.               | String (Path, *Required if `ENCAPSULATE_TEXT_AS_ENHANCED_SR` is ON) |
+| Logging         | `LOGGING_LEVELS`              | Yes      | Dictionary defining logging levels for different loggers.            | Dict (e.g., `{basic: INFO, detailed: DEBUG, error: ERROR}`)     |
 
 ## Configuration Flow
-```mermaid
-graph TD
-    A[Start] --> B{Mode Check}
-    B -->|Monitor| C[Database Polling]
-    B -->|CLI| D[Single Study Processing]
-    C --> E[Config.yaml Settings]
-    D --> E
-    E --> F[Load Environment]
-    F --> G[Initialize Components]
 ```
-
-## Related Documents
-- [Installation Instructions](../high_level/installation.md)
-- [Main Application Workflow](../modules/main.md)
