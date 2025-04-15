@@ -4,18 +4,18 @@
 
 The application utilizes Python's built-in `logging` module, configured centrally by `modules/logger_config.py`.
 
-*   **Configuration:** Primarily driven by `LOG_LEVEL` and `LOG_FILE` settings in `config.yaml`.
+*   **Configuration:** Primarily driven by the `LOGGING_LEVELS` dictionary in `config.yaml`. This dictionary specifies the logging level (e.g., "INFO", "DEBUG") for different logger categories (e.g., `basic`, `detailed`, `error`).
 *   **Outputs:** 
-    *   **File:** Logs messages to the file specified by `LOG_FILE` (e.g., `app.log`). The level for file logging is determined by the `LOG_LEVEL` setting.
-    *   **Console:** Logs messages to standard output (the terminal). The level for console output is also determined by `LOG_LEVEL`.
-*   **Level:** The `LOG_LEVEL` setting (e.g., "DEBUG", "INFO", "WARNING", "ERROR") controls the minimum severity of messages captured by both handlers. "DEBUG" is the most verbose, while "ERROR" is the least.
-*   **Format:** Log messages typically include timestamp, log level, module name (or root), and the message itself.
-*   **Rotation:** File rotation (limiting size/backups) might be implemented within `logger_config.py` (e.g., using `RotatingFileHandler`), but this is not explicitly configurable via `config.yaml` in the current setup. Check the `logger_config.py` source for details.
+    *   **File:** Logs messages to a hardcoded file named `app.log` in the project root. The level for file logging is determined by the `basic` entry in the `LOGGING_LEVELS` dictionary.
+    *   **Console:** Logs messages to standard output (the terminal). The level for console output is also determined by the `basic` entry in the `LOGGING_LEVELS` dictionary.
+*   **Levels:** The `LOGGING_LEVELS` settings control the minimum severity of messages captured. For example, the `basic` level applies to the root logger and general output, while `detailed` might be used for specific verbose modules (though this requires modules to explicitly get the `detailed` logger).
+*   **Format:** Log messages typically include timestamp, log level, logger name (e.g., `root`, `detailed`), and the message itself.
+*   **Rotation:** File rotation (5MB limit, 2 backups) is implemented using `RotatingFileHandler` in `logger_config.py`. This is not configurable via `config.yaml`.
 
 ## Key Log Locations and Interpretation
 
-*   **`app.log` (or configured `LOG_FILE`):** This is the primary file for detailed debugging. Set `LOG_LEVEL: "DEBUG"` in `config.yaml` to capture the most information.
-*   **Console Output:** Provides real-time feedback, typically at the "INFO" level or higher by default.
+*   **`app.log`:** This is the primary file for detailed debugging. To capture the most information, ensure the `basic` and `detailed` levels in `config.yaml`'s `LOGGING_LEVELS` are set to `"DEBUG"`.
+*   **Console Output:** Provides real-time feedback, typically reflecting the `basic` logging level (`"INFO"` by default).
 
 ## Interpreting Common Log Messages
 
@@ -98,11 +98,14 @@ The application utilizes Python's built-in `logging` module, configured centrall
 
 ```yaml
 # ----------------- Logging Configuration -----------------
-LOG_LEVEL: "INFO" # DEBUG, INFO, WARNING, ERROR
-LOG_FILE: "app.log"
+# Defines different logging levels used by logger_config.py
+LOGGING_LEVELS:
+  basic: "INFO"    # Default level for general logging (console/file)
+  detailed: "DEBUG"  # Level for detailed diagnostic logs (if used by module)
+  error: "ERROR"     # Level for error-specific logs (if used by module)
 ```
 
-**To Enable Debug Logging:** Change `LOG_LEVEL` to `"DEBUG"` in `config.yaml` and restart the application.
+**To Enable Debug Logging:** Change the `basic` level (and potentially `detailed`) to `"DEBUG"` in `config.yaml`'s `LOGGING_LEVELS` section and restart the application.
 
 ## Complete Log Statements Catalog
 

@@ -45,9 +45,9 @@ Edit the `config.yaml` file in the project root. Fill in the necessary details:
 - `ORACLE_HOST`, `ORACLE_PORT`, `ORACLE_SERVICE_NAME`, `ORACLE_USERNAME`, `ORACLE_PASSWORD`: For connecting to the Oracle database (used by the monitor).
 - `MONGODB_URI`, `MONGODB_DATABASE`: For connecting to your MongoDB instance.
 - `SHARE_USERNAME`, `SHARE_PASSWORD`: If the DICOM files reside on network shares requiring authentication (e.g., `\\server\share\path`).
-- Transcription Service Details: API keys or other settings required by `modules/transcribe.py` (e.g., `GEMINI_API_KEY`).
-- `DJANGO_SECRET_KEY`: Generate a strong random key (e.g., using `python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\"`) and place it here. **Do not commit the real secret key to version control.**
-- `DJANGO_ALLOWED_HOSTS`: For development, `[]` might be okay, but for deployment, list the hostnames/IPs the dashboard will be accessed from.
+- Transcription Service Details: API keys or other settings required by `modules/transcribe.py` (e.g., `GEMINI_API_KEY`, `MODEL_NAME`).
+- `SR_OUTPUT_FOLDER`: If using the `ENCAPSULATE_TEXT_AS_ENHANCED_SR` option, specify the output directory.
+- `LOGGING_LEVELS`: Adjust logging verbosity if needed.
 - Review other options like `ENCAPSULATE_TEXT_AS_ENHANCED_SR`, `STORE_TRANSCRIBED_REPORT`, `PRINT_GEMINI_OUTPUT`.
 *Refer to `config_reference.md` for details on all options.*
 

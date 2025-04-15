@@ -23,7 +23,7 @@ This function executes the full processing workflow for a single study identifie
 8.  **Handle Results:**
     *   If transcription is successful (`report_list` is generated):
         *   Calls `database_operations.save_transcription` to store the results in MongoDB.
-        *   Updates status to `completed` (or variants like `processing_complete_sr` if SR encapsulation is enabled) in MongoDB.
+        *   Updates status to `processing_complete` (or `processing_complete_sr` if SR encapsulation is enabled) in MongoDB.
         *   (Optional) Calls `encapsulate_text_as_enhanced_sr` if enabled.
         *   (Optional) Calls `store_transcribed_report` (legacy storage) if enabled.
     *   If transcription fails (`report_list` is empty or None):

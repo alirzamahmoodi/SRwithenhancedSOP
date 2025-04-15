@@ -27,13 +27,13 @@ This system automates the process of transcribing medical dictations associated 
 4.  **Core Processing Pipeline (`main.py` - `run_pipeline` function)**
     *   Orchestrates the transcription process for a single `STUDY_KEY`.
     *   Calls `query.process_study_key` to get the potential DICOM path.
-    *   Updates study status in MongoDB (`processing_query`, `processing_audio`, etc.) via `database_operations`.
+    *   Updates study status in MongoDB (`processing_query`, `processing_audio`, `transcribing`, etc.) via `database_operations`.
     *   If the path is UNC, calls `smb_connect.connect_to_share` to authenticate.
     *   Calls `extract_audio.extract_audio` to read the DICOM file (using the authenticated connection if applicable) and save a temporary audio file.
     *   Calls `transcribe.transcribe` to send the audio to the external transcription service.
     *   If transcription is successful:
         *   Calls `database_operations.save_transcription` to store the report text in the MongoDB `transcriptions` collection.
-        *   Updates study status to `completed` (or variants) in MongoDB.
+        *   Updates study status to `processing_complete` (or `processing_complete_sr` if SR encapsulation is enabled) in MongoDB.
     *   Handles errors, updating the study status to `error` in MongoDB with details.
     *   Cleans up temporary files.
 
@@ -54,7 +54,7 @@ This system automates the process of transcribing medical dictations associated 
 7.  **MongoDB Operations (`modules/database_operations.py`)**
     *   Provides functions to interact with the MongoDB database.
     *   Handles connecting to the database using settings from `config.yaml`.
-    *   `update_study_status`: Creates or updates records in the `studies` collection (tracking `study_key`, `status`, `timestamps`, `dicom_path`, `error_message`).
+    *   `update_study_status`: Creates or updates records in the `studies` collection (tracking `study_key`, `status` [e.g., 'received', 'processing_query', 'processing_audio', 'transcribing', 'processing_complete', 'processing_complete_sr', 'error'], `timestamps`, `dicom_path`, `error_message`).
     *   `save_transcription`: Inserts records into the `transcriptions` collection (linking to `study_key`, storing `report_text`, `timestamp`, `sr_path`).
 
 8.  **MongoDB Database**
@@ -89,7 +89,7 @@ This system automates the process of transcribing medical dictations associated 
 graph TD
     subgraph Monitor Host
         OM[Oracle DB Monitor] -- Polls --> ODB[(Oracle DB)]
-        OM -- Finds Study_Key --> MDB1[(MongoDB - Studies Collection)]
+        OM -- Finds Study_Key, Updates Status 'received' --> MDB1[(MongoDB - Studies Collection)]
         OM -- Adds Study_Key --> PQ(Processing Queue)
     end
 
@@ -98,19 +98,20 @@ graph TD
         PL -- Study_Key --> Q(query.py)
         ODB -- Metadata --> Q
         Q -- Path String --> PL
-        PL -- Updates Status --> MDB2[(MongoDB - Studies Collection)]
+        PL -- Updates Status ('processing_query') --> MDB2[(MongoDB - Studies Collection)]
         PL -- UNC Path + Credentials --> SMB(smb_connect.py)
         SMB -- Authenticates --> FS[Network Share]
+        PL -- Updates Status ('processing_audio', path) --> MDB3[(MongoDB - Studies Collection)]
         PL -- Path --> EA(extract_audio.py)
         FS -- DICOM File --> EA
         EA -- Audio File --> PL
-        PL -- Updates Status --> MDB3[(MongoDB - Studies Collection)]
+        PL -- Updates Status ('transcribing') --> MDB4[(MongoDB - Studies Collection)]
         PL -- Audio File --> T(transcribe.py)
         T -- Audio Data --> EXT(External Transcribe API)
         EXT -- Report Text --> T
         T -- Report Text --> PL
-        PL -- Report Data --> MDB4[(MongoDB - Transcriptions Collection)]
-        PL -- Updates Status --> MDB5[(MongoDB - Studies Collection)]
+        PL -- Report Data --> MDB5[(MongoDB - Transcriptions Collection)]
+        PL -- Updates Status ('processing_complete' / 'processing_complete_sr') --> MDB6[(MongoDB - Studies Collection)]
     end
 
     subgraph Dashboard Host
@@ -124,6 +125,7 @@ graph TD
     style MDB3 fill:#b9f6ca
     style MDB4 fill:#b9f6ca
     style MDB5 fill:#b9f6ca
+    style MDB6 fill:#b9f6ca
     style MDB_ALL fill:#b9f6ca
 
 ```
@@ -144,7 +146,7 @@ sequenceDiagram
     participant MongoDB
     participant Dashboard
 
-    Monitor->>OracleDB: Poll for studies (REPORT_STAT=3010)
+    Monitor->>OracleDB: Poll for studies (e.g., STUDYSTAT=3010)
     OracleDB-->>Monitor: Study_Key
     Monitor->>MongoDB: update_study_status(Study_Key, 'received')
     Monitor->>Pipeline: Start subprocess(Study_Key)
@@ -155,7 +157,7 @@ sequenceDiagram
     Query->>OracleDB: Get share (SHARE_FOLDER)
     OracleDB-->>Query: Share Folder
     Query-->>Pipeline: Constructed Path String (UNC Path)
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_audio')
+    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_query')
 
     opt UNC Path and Credentials exist
         Pipeline->>SMB: connect_to_share(UNC Path, User, Pass)
@@ -168,6 +170,7 @@ sequenceDiagram
         end
     end
 
+    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_audio', dicom_path)
     Pipeline->>ExtractAudio: extract_audio(UNC Path)
     ExtractAudio->>FileShare: Read DICOM File
     FileShare-->>ExtractAudio: File Data
@@ -177,8 +180,8 @@ sequenceDiagram
     Pipeline->>TranscribeAPI: transcribe(Temp Audio Path)
     TranscribeAPI-->>Pipeline: Report Text
 
-    Pipeline->>MongoDB: save_transcription(Study_Key, Report Text)
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'completed')
+    Pipeline->>MongoDB: save_transcription(Study_Key, Report Text, [sr_path])
+    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_complete' / 'processing_complete_sr')
     Pipeline-->>Monitor: Exit Subprocess
 
     loop User Interaction
