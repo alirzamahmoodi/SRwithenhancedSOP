@@ -63,7 +63,32 @@ class ExtractAudio:
             self.logger.error("Waveform data is missing in the DICOM file.")
             raise AttributeError("Waveform data is missing in the DICOM file.")
 
-        audio_data = np.frombuffer(waveform.WaveformData, dtype=np.int16)
+        # Determine audio data type based on WaveformBitsAllocated
+        bits_allocated = waveform.get('WaveformBitsAllocated', 16) # Default to 16 if missing
+        dtype = np.int16 # Default dtype
+
+        if bits_allocated == 16:
+            dtype = np.int16
+            self.logger.debug("Using 16-bit signed integer dtype.")
+        elif bits_allocated == 8:
+            # DICOM standard often uses unsigned for 8-bit audio.
+            # WaveformSampleInterpretation (003A,0220) could specify SB/UB, but let's default to uint8 for 8 bits.
+            dtype = np.uint8
+            self.logger.debug("Using 8-bit unsigned integer dtype.")
+        else:
+            self.logger.warning(f"Unsupported WaveformBitsAllocated value: {bits_allocated}. Defaulting to 16-bit signed integer (int16). Audio data might be misinterpreted.")
+            # Keep dtype as np.int16 (the default)
+
+        if 'WaveformBitsAllocated' not in waveform:
+             self.logger.warning("WaveformBitsAllocated tag not found. Assuming 16-bit audio (int16).")
+
+        audio_data = np.frombuffer(waveform.WaveformData, dtype=dtype)
+
+        # Check number of channels
+        num_channels = waveform.get('NumberOfChannels', 1)
+        if num_channels != 1:
+             self.logger.warning(f"Expected 1 audio channel but DICOM indicates {num_channels}. The output WAV file might be incorrect if data is interleaved.")
+             # Future improvement: Reshape audio_data if num_channels > 1
 
         # Verify that the sampling frequency is available.
         if not hasattr(waveform, 'SamplingFrequency'):

@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 import yaml
+import sys
 
 def setup_logging(config_path='config.yaml', log_file='app.log'):
     with open(config_path, 'r') as file:
@@ -13,12 +14,17 @@ def setup_logging(config_path='config.yaml', log_file='app.log'):
     
     log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     
-    file_handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=2)
+    file_handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=2, encoding='utf-8')
     file_handler.setFormatter(log_formatter)
     
-    stream_handler = logging.StreamHandler()
+    stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setFormatter(log_formatter)
+    stream_handler.encoding = 'utf-8'
     
+    root_logger = logging.getLogger()
+    if root_logger.hasHandlers():
+        root_logger.handlers.clear()
+
     logging.basicConfig(
         level=basic_level,
         handlers=[file_handler, stream_handler]
