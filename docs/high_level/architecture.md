@@ -74,7 +74,7 @@ This system automates the process of transcribing medical dictations associated 
 | **Web Dashboard**     | Django, `djongo`                                | environment.yml, config.yaml |
 | **AI Processing**     | Google Gemini (or other via `transcribe.py`)    | config.yaml     |
 | **Medical Imaging**   | `pydicom` (likely used in `extract_audio.py`)   | DICOM Standard  |
-| **Build (Optional)**  | PyInstaller                                     | A *.spec File |
+| **Build (Optional)**  | PyInstaller                                     | PG_Transcriber.spec |
 
 ## Data Flow Diagram
 

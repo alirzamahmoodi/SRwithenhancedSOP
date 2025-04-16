@@ -112,7 +112,7 @@ Make sure PyInstaller is installed in your activated environment (`pip install p
 2. **Build Executable:**
 Run PyInstaller using the provided spec file.
 ```bash
-pyinstaller --name PG_Transcriber main.py
+pyinstaller PG_Transcriber.spec
 ```
 The output will be in the `dist/` directory.
 

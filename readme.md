@@ -70,7 +70,7 @@ See `docs/high_level/installation.md` for detailed steps. A summary:
 6.  **(Optional) Build Executable:**
     ```bash
     pip install pyinstaller # If not already installed via environment.yml
-    pyinstaller --name PG_Transcriber main.py
+    pyinstaller PG_Transcriber.spec
     ```
     *Note: If building, ensure `config.yaml` is placed correctly relative to the executable as described in the Run Instructions.*
 
