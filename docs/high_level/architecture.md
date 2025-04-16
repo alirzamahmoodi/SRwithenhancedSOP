@@ -80,109 +80,138 @@ This system automates the process of transcribing medical dictations associated 
 
 ```mermaid
 graph TD
-    %% ===== Define Styles =====
-    classDef entry fill:#f9f,stroke:#333,stroke-width:2px;          %% Main Entry Point
-    classDef module fill:#ccf,stroke:#333,stroke-width:2px;         %% Core Processing Modules
-    classDef dbInterface fill:#e6e6fa,stroke:#333,stroke-width:2px;  %% MongoDB Interface Module
-    classDef primaryDB fill:#f8c471,stroke:#333,stroke-width:2px;    %% Oracle - Source & Final Report
-    classDef processDB fill:#aed6f1,stroke:#333,stroke-width:2px;    %% Mongo - Process State Tracking
-    classDef externalAPI fill:#f7dc6f,stroke:#333,stroke-width:2px;   %% External Service (Gemini)
-    classDef fileSystem fill:#a9dfbf,stroke:#333,stroke-width:2px;   %% Filesystem Resources
-    classDef dashboard fill:#d7dbdd,stroke:#333,stroke-width:2px;    %% Web Dashboard
+    subgraph Service Host
+        APP(main.py --monitor) -- Starts --> DBMON(modules/database_monitor.py)
+        DBMON -- Polls --> ODB[(Oracle DB)]
+        DBMON -- Finds Study_Key --> PW(modules/processing_worker.py)
+        DBMON -- Status Updates --> DBOPS(modules/database_operations.py)
 
-    %% ===== External Systems / Data Stores =====
-    ORACLE[(Oracle DB)]:::primaryDB
-    MONGO[(MongoDB)]:::processDB
-    API{{Gemini API}}:::externalAPI
-    SHARE[Network Share]:::fileSystem
-    TEMP[Temp Audio Files]:::fileSystem
-    SR_OUT[SR Output Folder]:::fileSystem
+        PW -- Study_Key --> Q(modules/query.py)
+        ODB -- Metadata --> Q
+        Q -- Path String --> PW
+        PW -- Status Updates --> DBOPS
 
-    %% ===== Main Application Flow =====
-    subgraph "Transcription Service Host"
-        direction TB
-        MAIN(main.py --monitor):::entry
-        DBMON(database_monitor.py):::module
-        PWORK(processing_worker.py):::module
-        DBOPS(database_operations.py):::dbInterface
-        QUERY(query.py):::module
-        SMBC(smb_connect.py):::module
-        EXTAUD(extract_audio.py):::module
-        TRANSC(transcribe.py):::module
-        STORE(store_transcribed_report.py):::module
-        ESR(encapsulate_..._sr.py):::module
+        PW -- UNC Path + Credentials --> SMB(modules/smb_connect.py)
+        SMB -- Authenticates --> FS[Network Share]
 
-        %% --- Monitoring & Initiation ---
-        MAIN -- Starts --> DBMON
-        DBMON -- 1. Polls (STUDYSTAT=3010) --> ORACLE
-        ORACLE -- 2. Returns study_key --> DBMON
-        DBMON -- 3. Update Status ('received') --> DBOPS
-        DBOPS -- 3a. Writes Status --> MONGO
-        DBMON -- 4. Calls process_study --> PWORK
+        PW -- Path --> EA(modules/extract_audio.py)
+        FS -- DICOM File --> EA
+        EA -- Audio File --> PW
+        PW -- Status Updates --> DBOPS
 
-        %% --- Study Processing Pipeline ---
-        PWORK -- 5. Update Status ('processing_query') --> DBOPS
-        PWORK -- 6. Needs DICOM Path --> QUERY
-        QUERY -- 6a. Reads Metadata/Path --> ORACLE
-        ORACLE -- 6b. Returns Path Info --> QUERY
-        QUERY -- 6c. Returns dicom_path --> PWORK
+        PW -- Audio File --> T(modules/transcribe.py)
+        T -- Audio Data --> EXT(External Transcribe API)
+        EXT -- Report Dict --> T
+        T -- Report Dict --> PW
 
-        PWORK -- 7. Connects to Share (if UNC) --> SMBC
-        SMBC -- 7a. Authenticates --> SHARE
+        %% Database Operations Module handles MongoDB
+        PW -- Report Data / Status Updates --> DBOPS
+        DBOPS -- Writes --> MDB[(MongoDB)]
 
-        PWORK -- 8. Update Status ('processing_audio') --> DBOPS
-        PWORK -- 9. Needs Audio --> EXTAUD
-        EXTAUD -- 9a. Reads DICOM --> SHARE
-        EXTAUD -- 9b. Writes Temp Audio --> TEMP
-        EXTAUD -- 9c. Returns audio_path --> PWORK
+        %% Assuming a module (like StoreReportModule) saves text to Oracle
+        PW -- Report Dict --> STORE(modules/store_transcribed_report.py)
+        STORE -- Saves Transcription --> ODB
+    end
 
-        PWORK -- 10. Update Status ('transcribing') --> DBOPS
-        PWORK -- 11. Needs Transcription --> TRANSC
-        TRANSC -- 11a. Reads Temp Audio --> TEMP
-        TRANSC -- 11b. Sends Audio --> API
-        API -- 11c. Returns Report Dictionary --> TRANSC
-        TRANSC -- 11d. Returns report_dict --> PWORK
+    style MDB fill:#b9f6ca
+    style ODB fill:#f9bdbb
+```
 
-        %% --- Result Handling & Storage ---
-        PWORK -- 12. Store Temp Transcription --> DBOPS
-        DBOPS -- 12a. Writes Transcription --> MONGO
-        PWORK -- 13. Update Status ('saving_report') --> DBOPS
+## Sequence Diagram
 
-        %% --- Primary Output: Save to Oracle ---
-        PWORK -- 14. Saves Final Report --> STORE
-        STORE -- 14a. Calls F_INSERT --> ORACLE
-        PWORK -- 15. Update Status ('complete_oracle') --> DBOPS
+```mermaid
+sequenceDiagram
+    participant Main as main.py
+    participant DBMON as DatabaseMonitor
+    participant PWORK as ProcessingWorker
+    participant DBOPS as DBOperations
+    participant QUERY as QueryModule
+    participant SMBC as SmbConnect
+    participant EXTAUD as ExtractAudio
+    participant TRANSC as TranscribeModule
+    participant STORE as StoreReportModule
+    participant ESR as EncapsulateSRModule
+    participant ORACLE as OracleDB
+    participant MONGO as MongoDB
+    participant SHARE as NetworkShare
+    participant TEMP as TempFileSystem
+    participant API as GeminiAPI
+    participant SR_OUT as SROutputFolder
 
-        %% --- Optional Output: Create SR File ---
-        subgraph "Optional SR Output"
-            direction TB
-            PWORK -- 16. Creates SR? --> ESR
-            ESR -- 16a. Reads DICOM --> SHARE
-            ESR -- 16b. Writes SR File --> SR_OUT
-            ESR -- 16c. Returns sr_path --> PWORK
-            PWORK -- 16d. Update Status ('complete_sr_oracle') --> DBOPS
+    Main->>DBMON: Start Monitoring
+    loop Polling Loop
+        DBMON->>ORACLE: Poll for studies (STUDYSTAT=3010)
+        ORACLE-->>DBMON: study_key
+        DBMON->>DBOPS: update_status(study_key, 'received')
+        DBOPS->>MONGO: Write status 'received'
+        DBMON->>PWORK: process_study(study_key)
+        activate PWORK
+        PWORK->>DBOPS: update_status(study_key, 'processing_query')
+        DBOPS->>MONGO: Write status 'processing_query'
+        PWORK->>QUERY: get_dicom_path(study_key)
+        activate QUERY
+        QUERY->>ORACLE: Read metadata/path
+        ORACLE-->>QUERY: path_info
+        QUERY-->>PWORK: dicom_path
+        deactivate QUERY
+
+        alt If path is UNC
+            PWORK->>SMBC: connect(path, credentials)
+            activate SMBC
+            SMBC->>SHARE: Authenticate
+            SMBC-->>PWORK: Connection Success/Fail
+            deactivate SMBC
         end
 
-        %% --- Cleanup & Loop Continuation ---
-        PWORK -- 17. Deletes Temp Audio --> TEMP
-        PWORK -- 18. Processing Complete --> DBMON
-        DBMON -- 19. Continues Polling --> DBMON
+        PWORK->>DBOPS: update_status(study_key, 'processing_audio')
+        DBOPS->>MONGO: Write status 'processing_audio'
+        PWORK->>EXTAUD: extract_audio(dicom_path)
+        activate EXTAUD
+        EXTAUD->>SHARE: Read DICOM file
+        EXTAUD->>TEMP: Write temp_audio_file
+        EXTAUD-->>PWORK: temp_audio_path
+        deactivate EXTAUD
 
-        %% --- General DB Interface Links ---
-        DBOPS -- Manages Study State --> MONGO
-    end
+        PWORK->>DBOPS: update_status(study_key, 'transcribing')
+        DBOPS->>MONGO: Write status 'transcribing'
+        PWORK->>TRANSC: transcribe(dicom_path, temp_audio_path)
+        activate TRANSC
+        TRANSC->>TEMP: Read temp_audio_file
+        TRANSC->>API: Send audio data
+        API-->>TRANSC: report_dict
+        TRANSC-->>PWORK: report_dict
+        deactivate TRANSC
 
-    %% ===== Dashboard Flow =====
-    subgraph "Dashboard Host"
-        DASH(Dashboard App):::dashboard
-        USER(User via Browser)
+        PWORK->>DBOPS: save_transcription(study_key, report_dict)
+        DBOPS->>MONGO: Write transcription data
+        PWORK->>DBOPS: update_status(study_key, 'saving_report')
+        DBOPS->>MONGO: Write status 'saving_report'
 
-        USER -- Views Dashboard --> DASH
-        DASH -- Reads Status/Transcriptions --> MONGO
-        MONGO -- Returns Data --> DASH
-        DASH -- Renders Page --> USER
+        PWORK->>STORE: save_to_oracle(report_dict)
+        activate STORE
+        STORE->>ORACLE: Call F_INSERT(report_data)
+        STORE-->>PWORK: Success/Fail
+        deactivate STORE
+        PWORK->>DBOPS: update_status(study_key, 'complete_oracle')
+        DBOPS->>MONGO: Write status 'complete_oracle'
+
+        opt Create SR Report
+            PWORK->>ESR: create_sr(dicom_path, report_dict)
+            activate ESR
+            ESR->>SHARE: Read DICOM template/data
+            ESR->>SR_OUT: Write SR file
+            ESR-->>PWORK: sr_file_path
+            deactivate ESR
+            PWORK->>DBOPS: update_status(study_key, 'complete_sr_oracle')
+            DBOPS->>MONGO: Write status 'complete_sr_oracle'
+        end
+
+        PWORK->>TEMP: Delete temp_audio_file
+        deactivate PWORK
+        PWORK-->>DBMON: Processing Finished
     end
 ```
+
 *Diagram clarifying database roles and workflow steps.*
 
 *   **Credentials:**
