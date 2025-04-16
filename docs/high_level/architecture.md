@@ -4,6 +4,7 @@
 
 This system automates the process of transcribing medical dictations associated with DICOM studies. It monitors an Oracle database for new studies, retrieves associated DICOM audio data (potentially from authenticated network shares), uses an external service (like Google Gemini) for transcription, stores the status and results in a MongoDB database, and provides a Django-based web dashboard for monitoring progress.
 
+
 ## Key Components
 
 1.  **Main Application (`main.py`)**
@@ -79,112 +80,110 @@ This system automates the process of transcribing medical dictations associated 
 
 ```mermaid
 graph TD
-    subgraph Service Host
-        APP(main.py --monitor) -- Starts --> OM(database_monitor.py)
-        OM -- Polls --> ODB[(Oracle DB)]
-        OM -- Finds Study_Key, Updates Status 'received' --> MDB1[(MongoDB - Studies Collection)]
-        OM -- Calls process_study(config, Study_Key) --> PW(processing_worker.py)
-        PW -- Study_Key --> Q(query.py)
-        ODB -- Metadata --> Q
-        Q -- Path String --> PW
-        PW -- Updates Status ('processing_query') --> MDB2[(MongoDB - Studies Collection)]
-        PW -- UNC Path + Credentials --> SMB(smb_connect.py)
-        SMB -- Authenticates --> FS[Network Share]
-        PW -- Updates Status ('processing_audio', path) --> MDB3[(MongoDB - Studies Collection)]
-        PW -- Path --> EA(extract_audio.py)
-        FS -- DICOM File --> EA
-        EA -- Audio File --> PW
-        PW -- Updates Status ('transcribing') --> MDB4[(MongoDB - Studies Collection)]
-        PW -- Audio File --> T(transcribe.py)
-        T -- Audio Data --> EXT(External Transcribe API)
-        EXT -- Report Dict --> T
-        T -- Report Dict --> PW
-        PW -- Report Data --> MDB5[(MongoDB - Transcriptions Collection)]
-        PW -- Updates Status ('processing_complete' / 'processing_complete_sr') --> MDB6[(MongoDB - Studies Collection)]
-    end
+    %% ===== Define Styles =====
+    classDef entry fill:#f9f,stroke:#333,stroke-width:2px;          %% Main Entry Point
+    classDef module fill:#ccf,stroke:#333,stroke-width:2px;         %% Core Processing Modules
+    classDef dbInterface fill:#e6e6fa,stroke:#333,stroke-width:2px;  %% MongoDB Interface Module
+    classDef primaryDB fill:#f8c471,stroke:#333,stroke-width:2px;    %% Oracle - Source & Final Report
+    classDef processDB fill:#aed6f1,stroke:#333,stroke-width:2px;    %% Mongo - Process State Tracking
+    classDef externalAPI fill:#f7dc6f,stroke:#333,stroke-width:2px;   %% External Service (Gemini)
+    classDef fileSystem fill:#a9dfbf,stroke:#333,stroke-width:2px;   %% Filesystem Resources
+    classDef dashboard fill:#d7dbdd,stroke:#333,stroke-width:2px;    %% Web Dashboard
 
-    subgraph Dashboard Host
-        WEB(Django Dashboard) -- Reads Data --> MDB_ALL[(MongoDB)]
-        USR(User Browser) -- HTTP Request --> WEB
-        WEB -- HTML Response --> USR
-    end
+    %% ===== External Systems / Data Stores =====
+    ORACLE[(Oracle DB)]:::primaryDB
+    MONGO[(MongoDB)]:::processDB
+    API{{Gemini API}}:::externalAPI
+    SHARE[Network Share]:::fileSystem
+    TEMP[Temp Audio Files]:::fileSystem
+    SR_OUT[SR Output Folder]:::fileSystem
 
-    style MDB1 fill:#b9f6ca
-    style MDB2 fill:#b9f6ca
-    style MDB3 fill:#b9f6ca
-    style MDB4 fill:#b9f6ca
-    style MDB5 fill:#b9f6ca
-    style MDB6 fill:#b9f6ca
-    style MDB_ALL fill:#b9f6ca
+    %% ===== Main Application Flow =====
+    subgraph "Transcription Service Host"
+        direction TB
+        MAIN(main.py --monitor):::entry
+        DBMON(database_monitor.py):::module
+        PWORK(processing_worker.py):::module
+        DBOPS(database_operations.py):::dbInterface
+        QUERY(query.py):::module
+        SMBC(smb_connect.py):::module
+        EXTAUD(extract_audio.py):::module
+        TRANSC(transcribe.py):::module
+        STORE(store_transcribed_report.py):::module
+        ESR(encapsulate_..._sr.py):::module
 
-```
-*Simplified - Multiple updates to MongoDB shown separately for clarity.*
+        %% --- Monitoring & Initiation ---
+        MAIN -- Starts --> DBMON
+        DBMON -- 1. Polls (STUDYSTAT=3010) --> ORACLE
+        ORACLE -- 2. Returns study_key --> DBMON
+        DBMON -- 3. Update Status ('received') --> DBOPS
+        DBOPS -- 3a. Writes Status --> MONGO
+        DBMON -- 4. Calls process_study --> PWORK
 
-## Sequence Diagram (Simplified Pipeline Focus)
+        %% --- Study Processing Pipeline ---
+        PWORK -- 5. Update Status ('processing_query') --> DBOPS
+        PWORK -- 6. Needs DICOM Path --> QUERY
+        QUERY -- 6a. Reads Metadata/Path --> ORACLE
+        ORACLE -- 6b. Returns Path Info --> QUERY
+        QUERY -- 6c. Returns dicom_path --> PWORK
 
-```mermaid
-sequenceDiagram
-    participant MainApp as main.py
-    participant Monitor as database_monitor.py
-    participant OracleDB
-    participant Worker as processing_worker.py
-    participant Query as query.py
-    participant SMB as smb_connect.py
-    participant FileShare
-    participant ExtractAudio
-    participant TranscribeAPI
-    participant MongoDB
-    participant Dashboard
+        PWORK -- 7. Connects to Share (if UNC) --> SMBC
+        SMBC -- 7a. Authenticates --> SHARE
 
-    MainApp->>Monitor: Start monitor.start_monitoring()
-    loop Monitoring Loop
-        Monitor->>OracleDB: Poll for studies (e.g., STUDYSTAT=3010)
-        OracleDB-->>Monitor: Study_Key
-        Monitor->>MongoDB: update_study_status(Study_Key, 'received')
-        Monitor->>Worker: process_study(config, Study_Key) # Direct function call
+        PWORK -- 8. Update Status ('processing_audio') --> DBOPS
+        PWORK -- 9. Needs Audio --> EXTAUD
+        EXTAUD -- 9a. Reads DICOM --> SHARE
+        EXTAUD -- 9b. Writes Temp Audio --> TEMP
+        EXTAUD -- 9c. Returns audio_path --> PWORK
 
-        Worker->>Query: process_study_key(Study_Key)
-        Query->>OracleDB: Get metadata (PATHNAME, FILENAME, LSTORAGE_KEY)
-        OracleDB-->>Query: Metadata
-        Query->>OracleDB: Get share (SHARE_FOLDER)
-        OracleDB-->>Query: Share Folder
-        Query-->>Worker: Constructed Path String (UNC Path)
-        Worker->>MongoDB: update_study_status(Study_Key, 'processing_query')
+        PWORK -- 10. Update Status ('transcribing') --> DBOPS
+        PWORK -- 11. Needs Transcription --> TRANSC
+        TRANSC -- 11a. Reads Temp Audio --> TEMP
+        TRANSC -- 11b. Sends Audio --> API
+        API -- 11c. Returns Report Dictionary --> TRANSC
+        TRANSC -- 11d. Returns report_dict --> PWORK
 
-        opt UNC Path and Credentials exist
-            Worker->>SMB: connect_to_share(UNC Path, User, Pass)
-            SMB->>FileShare: Authenticate via WNetAddConnection2
-            FileShare-->>SMB: Connection Status
-            SMB-->>Worker: Success/Failure
-            alt Connection Failed
-                Worker->>MongoDB: update_study_status(Study_Key, 'error', 'Auth Failed')
-                Worker-->>Monitor: Return from process_study (ends processing for this key)
-            end
+        %% --- Result Handling & Storage ---
+        PWORK -- 12. Store Temp Transcription --> DBOPS
+        DBOPS -- 12a. Writes Transcription --> MONGO
+        PWORK -- 13. Update Status ('saving_report') --> DBOPS
+
+        %% --- Primary Output: Save to Oracle ---
+        PWORK -- 14. Saves Final Report --> STORE
+        STORE -- 14a. Calls F_INSERT --> ORACLE
+        PWORK -- 15. Update Status ('complete_oracle') --> DBOPS
+
+        %% --- Optional Output: Create SR File ---
+        subgraph "Optional SR Output"
+            direction TB
+            PWORK -- 16. Creates SR? --> ESR
+            ESR -- 16a. Reads DICOM --> SHARE
+            ESR -- 16b. Writes SR File --> SR_OUT
+            ESR -- 16c. Returns sr_path --> PWORK
+            PWORK -- 16d. Update Status ('complete_sr_oracle') --> DBOPS
         end
 
-        Worker->>MongoDB: update_study_status(Study_Key, 'processing_audio', dicom_path)
-        Worker->>ExtractAudio: extract_audio(UNC Path)
-        ExtractAudio->>FileShare: Read DICOM File
-        FileShare-->>ExtractAudio: File Data
-        ExtractAudio-->>Worker: Temp Audio Path
-        Worker->>MongoDB: update_study_status(Study_Key, 'transcribing')
+        %% --- Cleanup & Loop Continuation ---
+        PWORK -- 17. Deletes Temp Audio --> TEMP
+        PWORK -- 18. Processing Complete --> DBMON
+        DBMON -- 19. Continues Polling --> DBMON
 
-        Worker->>TranscribeAPI: transcribe(Dicom Path, Temp Audio Path)
-        TranscribeAPI-->>Worker: Report Dictionary
-
-        Worker->>MongoDB: save_transcription(Study_Key, Report Dict, [sr_path])
-        Worker->>MongoDB: update_study_status(Study_Key, 'processing_complete' / 'processing_complete_sr')
-        Worker-->>Monitor: Return from process_study (ends processing for this key)
+        %% --- General DB Interface Links ---
+        DBOPS -- Manages Study State --> MONGO
     end
 
-    loop User Interaction
-        Dashboard->>MongoDB: Read studies/transcriptions
-        MongoDB-->>Dashboard: Data
-    end
+    %% ===== Dashboard Flow =====
+    subgraph "Dashboard Host"
+        DASH(Dashboard App):::dashboard
+        USER(User via Browser)
 
+        USER -- Views Dashboard --> DASH
+        DASH -- Reads Status/Transcriptions --> MONGO
+        MONGO -- Returns Data --> DASH
+        DASH -- Renders Page --> USER
+    end
 ```
-
-## Security Considerations
+*Diagram clarifying database roles and workflow steps.*
 
 *   **Credentials:**
     *   `config.yaml` contains sensitive credentials. Access control is crucial.
