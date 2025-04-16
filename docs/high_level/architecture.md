@@ -6,69 +6,61 @@ This system automates the process of transcribing medical dictations associated 
 
 ## Key Components
 
-1.  **Oracle Database Monitor (`modules/database_monitor.py`)**
-    *   Polls an Oracle table (e.g., `TREPORT`) for studies requiring transcription.
-    *   When a new study (`STUDY_KEY`) is detected, it updates the study's status to `received` in the MongoDB `studies` collection via `database_operations`.
-    *   Adds the `STUDY_KEY` to an internal queue.
-    *   Launches the main processing pipeline (`main.py <STUDY_KEY>`) as a subprocess for each key in the queue.
+1.  **Main Application (`main.py`)**
+    *   Entry point for the service, launched via `python main.py --monitor`.
+    *   Loads configuration (`config.yaml`), initializes logging.
+    *   Instantiates and starts the `DatabaseMonitor`.
 
-2.  **Path Query (`modules/query.py`)**
-    *   Receives a `STUDY_KEY`.
-    *   Connects to the Oracle database to retrieve metadata associated with the study (e.g., `REPORT_KEY`, `PATHNAME`, `FILENAME`, `LSTORAGE_KEY`).
-    *   Queries storage configuration (e.g., `TSTORAGE`) to find the base share path (`SHARE_FOLDER`).
-    *   Constructs the full, potential DICOM file path (often a UNC path like `\\server\share\pathname\filename`) **without verifying its existence**.
-    *   Returns the constructed path string.
+2.  **Oracle Database Monitor (`modules/database_monitor.py`)**
+    *   Polls an Oracle table (e.g., `TSTUDY`) for studies requiring transcription (e.g., `STUDYSTAT=3010`).
+    *   When a new `STUDY_KEY` is detected, it updates the study's status to `received` in the MongoDB `studies` collection via `database_operations`.
+    *   Directly calls `processing_worker.process_study(config, study_key)` to initiate the pipeline for that study.
+    *   Waits for the `process_study` call to complete before continuing the polling loop.
 
-3.  **Network Share Connector (`modules/smb_connect.py`)**
-    *   Receives a UNC path and credentials (from `config.yaml`).
-    *   Uses `pywin32` (`WNetAddConnection2`) to establish an authenticated connection to the network share root (`\\server\share`) if the path is a UNC path and credentials are provided.
-    *   Handles cases where connections already exist or credentials fail.
-
-4.  **Core Processing Pipeline (`main.py` - `run_pipeline` function)**
-    *   Orchestrates the transcription process for a single `STUDY_KEY`.
-    *   Calls `query.process_study_key` to get the potential DICOM path.
+3.  **Processing Worker (`modules/processing_worker.py`)**
+    *   Contains the `process_study(config, study_key)` function, which orchestrates the transcription process for a single study.
+    *   Calls `query.process_study_key` to get the potential DICOM path from Oracle.
     *   Updates study status in MongoDB (`processing_query`, `processing_audio`, `transcribing`, etc.) via `database_operations`.
     *   If the path is UNC, calls `smb_connect.connect_to_share` to authenticate.
-    *   Calls `extract_audio.extract_audio` to read the DICOM file (using the authenticated connection if applicable) and save a temporary audio file.
+    *   Calls `extract_audio.extract_audio` to read the DICOM file and save a temporary audio file.
     *   Calls `transcribe.transcribe` to send the audio to the external transcription service.
     *   If transcription is successful:
-        *   Calls `database_operations.save_transcription` to store the report text in the MongoDB `transcriptions` collection.
+        *   Calls `database_operations.save_transcription` to store the report text/dictionary in the MongoDB `transcriptions` collection.
         *   Updates study status to `processing_complete` (or `processing_complete_sr` if SR encapsulation is enabled) in MongoDB.
     *   Handles errors, updating the study status to `error` in MongoDB with details.
     *   Cleans up temporary files.
 
-5.  **Audio Extraction (`modules/extract_audio.py`)**
+4.  **Path Query (`modules/query.py`)**
+    *   Receives a `STUDY_KEY`.
+    *   Connects to the Oracle database to retrieve metadata associated with the study.
+    *   Constructs the full, potential DICOM file path.
+    *   Returns the constructed path string.
+
+5.  **Network Share Connector (`modules/smb_connect.py`)**
+    *   Receives a UNC path and credentials.
+    *   Uses `pywin32` to establish an authenticated connection to the network share.
+
+6.  **Audio Extraction (`modules/extract_audio.py`)**
     *   Takes the DICOM file path.
-    *   Reads the DICOM file (requires file system access, leveraging the connection established by `smb_connect` if applicable).
-    *   Extracts the audio stream.
-    *   Saves the audio to a temporary file format (e.g., WAV).
+    *   Reads the DICOM file, extracts the audio stream, saves it to a temporary file.
     *   Returns the path to the temporary audio file.
 
-6.  **Transcription (`modules/transcribe.py`)**
-    *   Takes the temporary audio file path.
-    *   Connects to the configured external transcription service (e.g., Google Gemini API, using API keys from `config.yaml`).
-    *   Sends the audio data for transcription.
-    *   Receives the transcribed text report.
-    *   Returns the report (e.g., as a string or list of strings).
+7.  **Transcription (`modules/transcribe.py`)**
+    *   Takes the DICOM path and temporary audio file path.
+    *   Connects to the external transcription service (e.g., Google Gemini API).
+    *   Sends the audio, receives the report (as a dictionary).
+    *   Returns the report dictionary or `None`.
 
-7.  **MongoDB Operations (`modules/database_operations.py`)**
-    *   Provides functions to interact with the MongoDB database.
-    *   Handles connecting to the database using settings from `config.yaml`.
-    *   `update_study_status`: Creates or updates records in the `studies` collection (tracking `study_key`, `status` [e.g., 'received', 'processing_query', 'processing_audio', 'transcribing', 'processing_complete', 'processing_complete_sr', 'error'], `timestamps`, `dicom_path`, `error_message`).
-    *   `save_transcription`: Inserts records into the `transcriptions` collection (linking to `study_key`, storing `report_text`, `timestamp`, `sr_path`).
+8.  **MongoDB Operations (`modules/database_operations.py`)**
+    *   Provides functions (`update_study_status`, `save_transcription`) to interact with MongoDB collections (`studies`, `transcriptions`).
 
-8.  **MongoDB Database**
-    *   Stores the application state and results.
-    *   `studies` collection: Tracks the processing status of each study.
-    *   `transcriptions` collection: Stores the resulting reports.
+9.  **MongoDB Database**
+    *   Stores application state (`studies`) and results (`transcriptions`).
 
-9.  **Django Web Dashboard (`dashboard/`)**
-    *   A separate web application built using the Django framework.
-    *   Connects to the MongoDB database (via `djongo` and `database_operations`).
-    *   Provides views (`study_dashboard/views.py`) to display data from the `studies` and `transcriptions` collections.
-    *   Uses templates (`study_dashboard/templates/`) to render HTML pages showing the status list and details for each study.
-    *   Includes a Django Admin interface (`study_dashboard/admin.py`) for low-level data viewing and management.
-    *   Runs as a separate process using `python manage.py runserver` (for development).
+10. **Django Web Dashboard (`dashboard/`)**
+    *   Separate web application connecting to MongoDB.
+    *   Displays study status and transcription results.
+    *   Runs as a separate process (`python manage.py runserver`).
 
 ## Technical Stack
 
@@ -87,31 +79,28 @@ This system automates the process of transcribing medical dictations associated 
 
 ```mermaid
 graph TD
-    subgraph Monitor Host
-        OM[Oracle DB Monitor] -- Polls --> ODB[(Oracle DB)]
+    subgraph Service Host
+        APP(main.py --monitor) -- Starts --> OM(database_monitor.py)
+        OM -- Polls --> ODB[(Oracle DB)]
         OM -- Finds Study_Key, Updates Status 'received' --> MDB1[(MongoDB - Studies Collection)]
-        OM -- Adds Study_Key --> PQ(Processing Queue)
-    end
-
-    subgraph Processing Host/Subprocess
-        PQ -- Sends Study_Key --> PL(main.py Pipeline)
-        PL -- Study_Key --> Q(query.py)
+        OM -- Calls process_study(config, Study_Key) --> PW(processing_worker.py)
+        PW -- Study_Key --> Q(query.py)
         ODB -- Metadata --> Q
-        Q -- Path String --> PL
-        PL -- Updates Status ('processing_query') --> MDB2[(MongoDB - Studies Collection)]
-        PL -- UNC Path + Credentials --> SMB(smb_connect.py)
+        Q -- Path String --> PW
+        PW -- Updates Status ('processing_query') --> MDB2[(MongoDB - Studies Collection)]
+        PW -- UNC Path + Credentials --> SMB(smb_connect.py)
         SMB -- Authenticates --> FS[Network Share]
-        PL -- Updates Status ('processing_audio', path) --> MDB3[(MongoDB - Studies Collection)]
-        PL -- Path --> EA(extract_audio.py)
+        PW -- Updates Status ('processing_audio', path) --> MDB3[(MongoDB - Studies Collection)]
+        PW -- Path --> EA(extract_audio.py)
         FS -- DICOM File --> EA
-        EA -- Audio File --> PL
-        PL -- Updates Status ('transcribing') --> MDB4[(MongoDB - Studies Collection)]
-        PL -- Audio File --> T(transcribe.py)
+        EA -- Audio File --> PW
+        PW -- Updates Status ('transcribing') --> MDB4[(MongoDB - Studies Collection)]
+        PW -- Audio File --> T(transcribe.py)
         T -- Audio Data --> EXT(External Transcribe API)
-        EXT -- Report Text --> T
-        T -- Report Text --> PL
-        PL -- Report Data --> MDB5[(MongoDB - Transcriptions Collection)]
-        PL -- Updates Status ('processing_complete' / 'processing_complete_sr') --> MDB6[(MongoDB - Studies Collection)]
+        EXT -- Report Dict --> T
+        T -- Report Dict --> PW
+        PW -- Report Data --> MDB5[(MongoDB - Transcriptions Collection)]
+        PW -- Updates Status ('processing_complete' / 'processing_complete_sr') --> MDB6[(MongoDB - Studies Collection)]
     end
 
     subgraph Dashboard Host
@@ -135,9 +124,10 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant Monitor
+    participant MainApp as main.py
+    participant Monitor as database_monitor.py
     participant OracleDB
-    participant Pipeline as main.py
+    participant Worker as processing_worker.py
     participant Query as query.py
     participant SMB as smb_connect.py
     participant FileShare
@@ -146,43 +136,46 @@ sequenceDiagram
     participant MongoDB
     participant Dashboard
 
-    Monitor->>OracleDB: Poll for studies (e.g., STUDYSTAT=3010)
-    OracleDB-->>Monitor: Study_Key
-    Monitor->>MongoDB: update_study_status(Study_Key, 'received')
-    Monitor->>Pipeline: Start subprocess(Study_Key)
+    MainApp->>Monitor: Start monitor.start_monitoring()
+    loop Monitoring Loop
+        Monitor->>OracleDB: Poll for studies (e.g., STUDYSTAT=3010)
+        OracleDB-->>Monitor: Study_Key
+        Monitor->>MongoDB: update_study_status(Study_Key, 'received')
+        Monitor->>Worker: process_study(config, Study_Key) # Direct function call
 
-    Pipeline->>Query: process_study_key(Study_Key)
-    Query->>OracleDB: Get metadata (PATHNAME, FILENAME, LSTORAGE_KEY)
-    OracleDB-->>Query: Metadata
-    Query->>OracleDB: Get share (SHARE_FOLDER)
-    OracleDB-->>Query: Share Folder
-    Query-->>Pipeline: Constructed Path String (UNC Path)
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_query')
+        Worker->>Query: process_study_key(Study_Key)
+        Query->>OracleDB: Get metadata (PATHNAME, FILENAME, LSTORAGE_KEY)
+        OracleDB-->>Query: Metadata
+        Query->>OracleDB: Get share (SHARE_FOLDER)
+        OracleDB-->>Query: Share Folder
+        Query-->>Worker: Constructed Path String (UNC Path)
+        Worker->>MongoDB: update_study_status(Study_Key, 'processing_query')
 
-    opt UNC Path and Credentials exist
-        Pipeline->>SMB: connect_to_share(UNC Path, User, Pass)
-        SMB->>FileShare: Authenticate via WNetAddConnection2
-        FileShare-->>SMB: Connection Status
-        SMB-->>Pipeline: Success/Failure
-        alt Connection Failed
-            Pipeline->>MongoDB: update_study_status(Study_Key, 'error', 'Auth Failed')
-            Pipeline-->>Monitor: Exit Subprocess
+        opt UNC Path and Credentials exist
+            Worker->>SMB: connect_to_share(UNC Path, User, Pass)
+            SMB->>FileShare: Authenticate via WNetAddConnection2
+            FileShare-->>SMB: Connection Status
+            SMB-->>Worker: Success/Failure
+            alt Connection Failed
+                Worker->>MongoDB: update_study_status(Study_Key, 'error', 'Auth Failed')
+                Worker-->>Monitor: Return from process_study (ends processing for this key)
+            end
         end
+
+        Worker->>MongoDB: update_study_status(Study_Key, 'processing_audio', dicom_path)
+        Worker->>ExtractAudio: extract_audio(UNC Path)
+        ExtractAudio->>FileShare: Read DICOM File
+        FileShare-->>ExtractAudio: File Data
+        ExtractAudio-->>Worker: Temp Audio Path
+        Worker->>MongoDB: update_study_status(Study_Key, 'transcribing')
+
+        Worker->>TranscribeAPI: transcribe(Dicom Path, Temp Audio Path)
+        TranscribeAPI-->>Worker: Report Dictionary
+
+        Worker->>MongoDB: save_transcription(Study_Key, Report Dict, [sr_path])
+        Worker->>MongoDB: update_study_status(Study_Key, 'processing_complete' / 'processing_complete_sr')
+        Worker-->>Monitor: Return from process_study (ends processing for this key)
     end
-
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_audio', dicom_path)
-    Pipeline->>ExtractAudio: extract_audio(UNC Path)
-    ExtractAudio->>FileShare: Read DICOM File
-    FileShare-->>ExtractAudio: File Data
-    ExtractAudio-->>Pipeline: Temp Audio Path
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'transcribing')
-
-    Pipeline->>TranscribeAPI: transcribe(Temp Audio Path)
-    TranscribeAPI-->>Pipeline: Report Text
-
-    Pipeline->>MongoDB: save_transcription(Study_Key, Report Text, [sr_path])
-    Pipeline->>MongoDB: update_study_status(Study_Key, 'processing_complete' / 'processing_complete_sr')
-    Pipeline-->>Monitor: Exit Subprocess
 
     loop User Interaction
         Dashboard->>MongoDB: Read studies/transcriptions
@@ -194,12 +187,12 @@ sequenceDiagram
 ## Security Considerations
 
 *   **Credentials:**
-    *   `config.yaml` contains sensitive credentials (Oracle DB, MongoDB URI, Share user/pass, API keys, Django secret key). Access to this file should be strictly controlled.
-    *   Consider using environment variables or a dedicated secrets management system instead of storing plain text credentials in `config.yaml` for production environments.
-*   **Network Shares:** Ensure the user account specified in `SHARE_USERNAME` has the minimum necessary permissions (read-only if possible) on the network share.
-*   **MongoDB:** Configure MongoDB authentication and network access controls appropriately.
-*   **Django Dashboard:** Follow Django security best practices (HTTPS, CSRF protection, secure session management, `DEBUG=False` in production).
-*   **PHI:** Review the transcription service's handling of Protected Health Information (PHI). Ensure redaction or appropriate agreements (BAA) are in place if necessary.
+    *   `config.yaml` contains sensitive credentials. Access control is crucial.
+    *   Consider alternatives like environment variables or secrets management for production.
+*   **Network Shares:** Use least privilege principles for the `SHARE_USERNAME` account.
+*   **MongoDB:** Configure authentication and network controls.
+*   **Django Dashboard:** Follow Django security best practices.
+*   **PHI:** Review transcription service handling of PHI.
 
 ## Cross References
 - [Installation Guide](installation.md)

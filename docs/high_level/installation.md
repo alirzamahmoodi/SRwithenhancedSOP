@@ -97,12 +97,12 @@ cd dashboard
 python manage.py runserver
 ```
 4. **Start Transcriber Service (Terminal 2):**
+Navigate to the project root directory (`SRwithenhancedSOP`).
 ```bash
-# Monitor mode
+# Monitor mode (This is the primary way to run the service)
 python main.py --monitor
-# OR Single study mode
-python main.py <SPECIFIC_STUDY_KEY>
 ```
+*The ability to run for a single study via `python main.py <STUDY_KEY>` has been removed.*
 
 ## Building for Deployment (Optional)
 
@@ -124,11 +124,11 @@ The output will be in the `dist/audio_transcriber` directory.
 4. **Running the Built Executable:**
 On the target server, open Command Prompt, navigate to the deployment directory, and run:
 ```bash
+# Monitor mode (This is the primary way to run the service)
 audio_transcriber.exe --monitor
-# OR
-audio_transcriber.exe <SPECIFIC_STUDY_KEY>
 ```
-*(Note: The Django dashboard is **not** included in this build process and would need separate deployment if required in production, e.g., using Gunicorn/Nginx/Daphne).*
+*Note: The single-study execution mode (`audio_transcriber.exe <STUDY_KEY>`) is no longer available.*
+*(Also Note: The Django dashboard is **not** included in this build process and would need separate deployment if required in production, e.g., using Gunicorn/Nginx/Daphne).*
 
 ## Troubleshooting
 - **`ModuleNotFoundError`:** Ensure the `google-ai` Conda environment is activated.
