@@ -4,6 +4,7 @@ import google.generativeai as genai
 import google.api_core.exceptions as google_exceptions
 import logging
 from pydantic import BaseModel
+import json
 
 class Transcription(BaseModel):
     Reading: str
@@ -56,21 +57,31 @@ class Transcribe:
                 return None
 
             # Generate transcription
-            prompt = f"""You are a medical transcription assistant. Transcribe the following medical dictation into a structured report in English. Follow these guidelines:
+            prompt = f"""You are a highly accurate medical transcription AI. A dictation includeing mixed Persian language and English medical terms relevant to the medical content is provided. translate them accurately within the transcription and transcribe everything into English. Your task is to generate a JSON report containing two fields: 'Reading' and 'Conclusion'. The 'Reading' field should contain the accurate but fluent transcription of the provided audio dictation. The 'Conclusion' field should summarize the key findings or diagnosis based on the dictation.
 
-1. **Structure**: Organize the report into a JSON with two sections: The first section 'Reading' and the second section 'Conclusion'. The Reading section should include the transcription of the medical dictation, and the Conclusion section should summarize the key findings or diagnosis from 'Reading' Section.
+Follow these instructions STRICTLY:
 
-2. **Language**: Ensure the entire report is in English, even if parts of the dictation are in Persian.
-
-3. **Patient Information**: Crucially, Exclude and remove any private patient information (e.g., name, ) in the report. You are free to mention their age or history if needed.
-
-4. **Tone**: Use a formal and professional tone suitable for a medical report. Write consistent paragraphs and avoid bullet points or lists.
-
-5. **No Introductory Phrases**:  **Crucially, DO NOT include any introductory or conversational phrases at the beginning of the report.**  Specifically, **absolutely avoid phrases like "Here's a medical report dictation:", "Okay, here is the report:", or any similar preamble.**  The report should start immediately with the transcript.
-
-6. **Accuracy**: Ensure the transcription is accurate and free of errors.
-
-7. **Remove Conversations**: Remove any unnecessary data and conversations between physician and transcription operator.
+1.  **Output Format**: Produce a SINGLE JSON object containing exactly two keys: "Reading" and "Conclusion".
+    * If using a list schema, the output list MUST contain only ONE such JSON object.
+    * **Example Output:**
+      ```json
+      {{
+        "Reading": "Almost verbatim transcription of the dictation goes here...",
+        "Conclusion": "Summary of key findings or diagnosis based on the report goes here. If none, state something like 'No specific findings mentioned in the dictation.'"
+      }}
+      ```
+2.  **Reading Section**: This section must contain an **accurate and fluent** transcription of the medical dictation. 
+    *   Correct stutters, false starts, and unnecessary repetitions to create a readable report, but **do not change the medical meaning**.
+    *   **Limit this section to approximately 6000 characters.**
+3.  **Conclusion Section**: This section must ONLY summarize the essential medical findings or diagnosis stated EXPLICITLY in the 'Reading' section. If the 'Reading' contains no specific findings, the 'Conclusion' should state that (e.g., "No specific findings mentioned in the dictation."). **Limit this section to approximately 2000 characters.**
+4.  **Language**: The dictation includes Persian terms relevant to the medical content, translate them accurately within the transcription and transcribe everything into English.
+5.  **Patient Information**: Remove ALL private patient identifiers (like name, MRN, specific address). Age or general history can be retained if dictated.
+6.  **Tone**: Maintain a formal, professional medical tone. Use complete sentences and paragraphs. Avoid lists or bullet points.
+7.  **Crucially - Exclude Non-Dictation Content**:
+    * Do NOT transcribe instructions to the transcriber, greetings, sign-offs (like "goodbye doctor"), background noise descriptions, or meta-comments about the recording process (e.g., "I need to check this file again").
+    * Focus *exclusively* on the intended medical dictation content.
+8.  **Crucially - No Introductory Phrases**: Your response MUST start IMMEDIATELY with the JSON object (`{{`). Do NOT include ANY preamble like "Here is the report:", "Okay:", etc.
+9.  **Accuracy and Fluency**: Be precise with medical terms. Produce a fluent, readable transcription by correcting stutters and repetitions naturally, without altering the core medical information dictated. Trust the core dictation content.
 """
             self.logger.debug("Generating content with Gemini API")
 
@@ -78,15 +89,49 @@ class Transcribe:
                 response = self.model.generate_content(
                     [uploaded_file, prompt],
                     generation_config=genai.GenerationConfig(
-                        response_mime_type="application/json",
-                        response_schema=list[Transcription],
-                        temperature=1,
+                        response_mime_type="application/json"
+                        # response_schema=Transcription
                     )
                 )
-                report_content = response.text
+                raw_json_response = response.text
                 self.logger.info(f"Transcription completed for audio file: {audio_path}")
-                self.logger.debug(f"Generated report content: {report_content}")
-                return report_content
+                # self.logger.debug(f"Raw response text was: {raw_json_response}") # Log raw before stripping if needed
+                try:
+                    # Strip leading/trailing whitespace (including newlines) before parsing
+                    cleaned_json_response = raw_json_response.strip()
+                    # Attempt to parse the JSON directly into a dictionary
+                    transcription_dict = json.loads(cleaned_json_response)
+                    self.logger.debug(f"Successfully parsed generated report content.")
+
+                    # Validate the parsed dictionary
+                    if isinstance(transcription_dict, dict):
+                        # Check if the required keys exist
+                        if "Reading" in transcription_dict and "Conclusion" in transcription_dict:
+                             self.logger.debug("Parsed transcription dictionary successfully.")
+                             # Optional: Validate against Pydantic model if strict conformance is needed
+                             # try:
+                             #     Transcription(**transcription_dict)
+                             #     return transcription_dict
+                             # except ValidationError as val_err:
+                             #     self.logger.error(f"Parsed dictionary does not match Transcription model: {val_err}")
+                             #     self.logger.debug(f"Parsed dictionary was: {transcription_dict}")
+                             #     return None
+                             return transcription_dict # Return the validated dictionary
+                        else:
+                            self.logger.error("Parsed dictionary is missing 'Reading' or 'Conclusion' key.")
+                            self.logger.debug(f"Parsed dictionary was: {transcription_dict}")
+                            return None
+                    else:
+                        self.logger.error(f"Expected a dictionary, but parsing yielded: {type(transcription_dict)}")
+                        self.logger.debug(f"Parsed response was: {transcription_dict}")
+                        return None
+
+                except json.JSONDecodeError as json_err:
+                    self.logger.error(f"Failed to parse JSON response from Gemini: {json_err}")
+                    # self.logger.debug(f"Raw response text was: {report_content}") # Use new variable name
+                    self.logger.debug(f"Raw response text was: {raw_json_response}")
+                    return None # Return None if JSON parsing fails
+
             except google_exceptions.Unauthenticated:
                 self.logger.error("Google Cloud API authentication failed. Check your API key.")
             except google_exceptions.DeadlineExceeded:

@@ -12,33 +12,71 @@ class StoreTranscribedReport:
     def store_transcribed_report(self, study_key, report_list):
         self.logger.info(f"Storing transcribed report for study key: {study_key}")
 
-        # Parse the report_list to extract Reading and Conclusion
+        parsed_report_data = None
+        # Check if report_list is a string that needs parsing, or already parsed data
+        if isinstance(report_list, str):
+            self.logger.debug("report_list is a string, attempting JSON parse.")
+            try:
+                parsed_report_data = json.loads(report_list)
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Failed to parse report_list string as JSON: {e}")
+                self.logger.debug(traceback.format_exc())
+                return
+        elif isinstance(report_list, list):
+            self.logger.debug("report_list is already a list, using directly.")
+            parsed_report_data = report_list
+        else:
+            self.logger.error(f"Unexpected type for report_list: {type(report_list)}. Expected str or list.")
+            return
+
+        # Now extract Reading and Conclusion from the parsed data
         try:
-            report_data = json.loads(report_list)
-            reading = report_data[0].get("Reading", "")
-            conclusion = report_data[1].get("Conclusion", "")
-        except (json.JSONDecodeError, IndexError, KeyError) as e:
-            self.logger.error(f"Failed to parse report_list: {str(e)}")
+            # Ensure parsed_report_data is a list with at least one element
+            if not isinstance(parsed_report_data, list) or len(parsed_report_data) == 0:
+                 raise ValueError(f"Parsed report data is not a non-empty list. Data: {parsed_report_data}")
+
+            # Access the first (and only) dictionary in the list
+            report_dict = parsed_report_data[0]
+            if not isinstance(report_dict, dict):
+                raise ValueError(f"First element in parsed report data is not a dictionary. Data: {parsed_report_data}")
+
+            reading = report_dict.get("Reading", "")
+            conclusion = report_dict.get("Conclusion", "")
+            self.logger.debug(f"Extracted Reading (first 50 chars): '{reading[:50]}...'")
+            self.logger.debug(f"Extracted Conclusion (first 50 chars): '{conclusion[:50]}...'")
+        except (IndexError, KeyError, TypeError, AttributeError, ValueError) as e: # Broader exception catching
+            self.logger.error(f"Failed to extract Reading/Conclusion from parsed data structure: {e}")
+            # Log the problematic structure for debugging
+            self.logger.debug(f"Problematic parsed_report_data structure: {parsed_report_data}")
             self.logger.debug(traceback.format_exc())
             return
 
         dsn = oracledb.makedsn(self.config["ORACLE_HOST"], self.config["ORACLE_PORT"], self.config["ORACLE_SERVICE_NAME"])
         self.logger.debug(f"DSN created: {dsn}")
+
+        connection = None # Initialize connection
+        cursor = None # Initialize cursor
         try:
-            connection = oracledb.connect(self.config["ORACLE_USERNAME"], self.config["ORACLE_PASSWORD"], dsn)
+            # Use keyword arguments for connect
+            connection = oracledb.connect(
+                user=self.config["ORACLE_USERNAME"],
+                password=self.config["ORACLE_PASSWORD"],
+                dsn=dsn
+            )
             self.logger.debug("Oracle connection established.")
             cursor = connection.cursor()
             self.logger.debug("Cursor created.")
 
             # Retrieve REPORT_KEY from TREPORT using the provided study_key.
             cursor.execute(
-                "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key",
+                # Fetch the specific report key that was initially processed (status 3010)
+                "SELECT REPORT_KEY FROM TREPORT WHERE STUDY_KEY = :study_key AND REPORT_STAT = 3010",
                 study_key=study_key
             )
-            self.logger.debug("Executed query to retrieve REPORT_KEY.")
+            self.logger.debug("Executed query to retrieve specific REPORT_KEY (status 3010).")
             row = cursor.fetchone()
             if not row:
-                self.logger.warning(f"No TREPORT record found for STUDY_KEY={study_key}")
+                self.logger.warning(f"No TREPORT record found for STUDY_KEY={study_key} with initial REPORT_STAT=3010")
                 return
             report_key = row[0]
             self.logger.debug(f"Retrieved REPORT_KEY: {report_key}")
@@ -119,7 +157,24 @@ class StoreTranscribedReport:
         except Exception as e:
             self.logger.error(f"Failed to store transcribed report: {str(e)}")
             self.logger.debug(traceback.format_exc())
+            # Rollback if commit failed or error occurred before commit
+            if connection:
+                try:
+                    connection.rollback()
+                    self.logger.info("Transaction rolled back due to error.")
+                except Exception as rb_err:
+                    self.logger.error(f"Error during rollback: {rb_err}")
         finally:
-            cursor.close()
-            connection.close()
-            self.logger.debug("Cursor and connection closed.")
+            # Close cursor and connection only if they were successfully created
+            if cursor:
+                try:
+                    cursor.close()
+                    self.logger.debug("Cursor closed.")
+                except Exception as c_err:
+                    self.logger.error(f"Error closing cursor: {c_err}")
+            if connection:
+                try:
+                    connection.close()
+                    self.logger.debug("Connection closed.")
+                except Exception as conn_err:
+                    self.logger.error(f"Error closing connection: {conn_err}")

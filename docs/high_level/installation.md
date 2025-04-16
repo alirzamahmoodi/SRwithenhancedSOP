@@ -45,9 +45,9 @@ Edit the `config.yaml` file in the project root. Fill in the necessary details:
 - `ORACLE_HOST`, `ORACLE_PORT`, `ORACLE_SERVICE_NAME`, `ORACLE_USERNAME`, `ORACLE_PASSWORD`: For connecting to the Oracle database (used by the monitor).
 - `MONGODB_URI`, `MONGODB_DATABASE`: For connecting to your MongoDB instance.
 - `SHARE_USERNAME`, `SHARE_PASSWORD`: If the DICOM files reside on network shares requiring authentication (e.g., `\\server\share\path`).
-- Transcription Service Details: API keys or other settings required by `modules/transcribe.py` (e.g., `GEMINI_API_KEY`).
-- `DJANGO_SECRET_KEY`: Generate a strong random key (e.g., using `python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\"`) and place it here. **Do not commit the real secret key to version control.**
-- `DJANGO_ALLOWED_HOSTS`: For development, `[]` might be okay, but for deployment, list the hostnames/IPs the dashboard will be accessed from.
+- Transcription Service Details: API keys or other settings required by `modules/transcribe.py` (e.g., `GEMINI_API_KEY`, `MODEL_NAME`).
+- `SR_OUTPUT_FOLDER`: If using the `ENCAPSULATE_TEXT_AS_ENHANCED_SR` option, specify the output directory.
+- `LOGGING_LEVELS`: Adjust logging verbosity if needed.
 - Review other options like `ENCAPSULATE_TEXT_AS_ENHANCED_SR`, `STORE_TRANSCRIBED_REPORT`, `PRINT_GEMINI_OUTPUT`.
 *Refer to `config_reference.md` for details on all options.*
 
@@ -97,12 +97,12 @@ cd dashboard
 python manage.py runserver
 ```
 4. **Start Transcriber Service (Terminal 2):**
+Navigate to the project root directory (`SRwithenhancedSOP`).
 ```bash
-# Monitor mode
+# Monitor mode (This is the primary way to run the service)
 python main.py --monitor
-# OR Single study mode
-python main.py <SPECIFIC_STUDY_KEY>
 ```
+*The ability to run for a single study via `python main.py <STUDY_KEY>` has been removed.*
 
 ## Building for Deployment (Optional)
 
@@ -112,23 +112,23 @@ Make sure PyInstaller is installed in your activated environment (`pip install p
 2. **Build Executable:**
 Run PyInstaller using the provided spec file.
 ```bash
-pyinstaller audio_transcriber.spec
+pyinstaller --name PG_Transcriber main.py
 ```
-The output will be in the `dist/audio_transcriber` directory.
+The output will be in the `dist/` directory.
 
 3. **Prepare Deployment Package:**
-- Copy the entire `dist/audio_transcriber` directory to the target server.
-- **Crucially, copy the `config.yaml` file** into the *same directory* as `audio_transcriber.exe` on the target server.
+- Copy the entire `dist` directory to the target server.
+- **Crucially, copy the `config.yaml` file** into the *same directory* as `PG_Transcriber.exe` on the target server.
 - Ensure the target server has any necessary runtime dependencies (like Oracle Instant Client if not bundled, though `python-oracledb` often includes a thin client).
 
 4. **Running the Built Executable:**
 On the target server, open Command Prompt, navigate to the deployment directory, and run:
 ```bash
-audio_transcriber.exe --monitor
-# OR
-audio_transcriber.exe <SPECIFIC_STUDY_KEY>
+# Monitor mode (This is the primary way to run the service)
+PG_Transcriber.exe --monitor
 ```
-*(Note: The Django dashboard is **not** included in this build process and would need separate deployment if required in production, e.g., using Gunicorn/Nginx/Daphne).*
+*Note: The single-study execution mode (`PG_Transcriber.exe <STUDY_KEY>`) is no longer available.*
+*(Also Note: The Django dashboard is **not** included in this build process and would need separate deployment if required in production, e.g., using Gunicorn/Nginx/Daphne).*
 
 ## Troubleshooting
 - **`ModuleNotFoundError`:** Ensure the `google-ai` Conda environment is activated.

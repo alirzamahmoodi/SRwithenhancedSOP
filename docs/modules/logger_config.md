@@ -2,48 +2,56 @@
 
 ## Overview
 
-Sets up centralized logging for the application. Configures a file handler (with rotation) and a console handler based on settings provided in `config.yaml`.
+Sets up centralized logging for the application. Configures a rotating file handler (`app.log`) and a console handler based on the `LOGGING_LEVELS` dictionary provided in `config.yaml`.
 
 ## Key Features
 
-*   **Configuration via `config.yaml`:** Reads `LOG_LEVEL` and `LOG_FILE` from the config.
-*   **File Logging:** Logs messages to the specified `LOG_FILE`.
-*   **Console Logging:** Logs messages to the standard output/console.
-*   **Standard Formatting:** Applies a consistent format to log messages, including timestamp, level, and message.
-*   **(Potential) Rotation:** The implementation *may* include file rotation (e.g., using `logging.handlers.RotatingFileHandler`), although this needs to be verified in the code itself. The previous documentation mentioned it, but the current config keys (`LOG_LEVEL`, `LOG_FILE`) don't explicitly define rotation parameters.
+*   **Configuration via `config.yaml`:** Reads the `LOGGING_LEVELS` dictionary.
+*   **File Logging:** Logs messages to `app.log` (hardcoded filename).
+*   **Console Logging:** Logs messages to the standard output/console (stdout).
+*   **Standard Formatting:** Applies a consistent format: `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
+*   **Rotation:** Implements file rotation using `logging.handlers.RotatingFileHandler` (5MB max size, 2 backups).
+*   **Multiple Levels:** Sets up different logging levels (`basic`, `detailed`, `error`) based on the `LOGGING_LEVELS` config, allowing different verbosity for different parts of the application (though modules need to request specific loggers like `logging.getLogger('detailed')` to use non-basic levels).
 
-## Function: `setup_logging()`
+## Function: `setup_logging(config_path='config.yaml', log_file='app.log')`
 
-*   **Purpose:** Initializes the root logger for the application.
-*   **Arguments:** Takes an optional `config` dictionary (though the current implementation might load `config.yaml` internally - check code).
+*   **Purpose:** Initializes the logging system for the application.
+*   **Arguments:**
+    *   `config_path` (str): Path to the configuration file (defaults to `config.yaml`).
+    *   `log_file` (str): Path to the log file (defaults to `app.log`).
 *   **Workflow:**
-    1.  Reads `LOG_LEVEL` and `LOG_FILE` from the configuration.
-    2.  Creates a `logging.FileHandler` for the specified `LOG_FILE`.
-    3.  Creates a `logging.StreamHandler` for console output.
-    4.  Defines a `logging.Formatter` for consistent message appearance.
-    5.  Applies the formatter to both handlers.
-    6.  Adds both handlers to the root logger.
-    7.  Sets the overall level of the root logger based on `LOG_LEVEL`.
+    1.  Loads the configuration from `config_path` using `yaml`.
+    2.  Retrieves the `LOGGING_LEVELS` dictionary from the config, providing defaults if keys are missing.
+    3.  Converts level names (e.g., "INFO") to `logging` constants (e.g., `logging.INFO`).
+    4.  Defines a `logging.Formatter`.
+    5.  Creates a `logging.handlers.RotatingFileHandler` for `log_file` with rotation parameters.
+    6.  Creates a `logging.StreamHandler` for console output (stdout).
+    7.  Applies the formatter to both handlers.
+    8.  Clears any existing handlers from the root logger.
+    9.  Configures the root logger using `logging.basicConfig` with the `basic` level and both handlers.
+    10. Sets specific levels for loggers named `detailed` and `error` based on the config.
 
 ## Integration Points
 
-*   The `setup_logging()` function is typically called once at the very beginning of `main.py` before any other significant operations.
-*   All other modules can then get the logger instance using `logging.getLogger(__name__)` and will inherit the configured handlers and level.
+*   The `setup_logging()` function is called once at the beginning of `main.py`.
+*   Other modules typically use `logging.getLogger(__name__)` (inheriting the `basic` level) or `logging.getLogger('detailed')` or `logging.getLogger('error')` for specific levels.
 
 ## Configuration (`config.yaml`)
 
-Relies on these keys:
+Relies on this dictionary:
 
 ```yaml
 # ----------------- Logging Configuration -----------------
-LOG_LEVEL: "INFO" # Overall logging level (e.g., DEBUG, INFO, WARNING, ERROR)
-LOG_FILE: "app.log" # Path to the log file (relative to project root)
+LOGGING_LEVELS:
+  basic: "INFO"    # Level for root logger (console and file)
+  detailed: "DEBUG"  # Level for getLogger('detailed')
+  error: "ERROR"     # Level for getLogger('error')
 ```
 
 ## Dependencies
 
-*   `logging` (standard library)
-*   `yaml` (for loading config, if done internally)
-*   `os` (potentially for path manipulation)
+*   `logging` (standard library, including `logging.handlers`)
+*   `yaml` (for loading config)
+*   `sys` (for `sys.stdout`)
 
 [Back to Module Index](main.md)

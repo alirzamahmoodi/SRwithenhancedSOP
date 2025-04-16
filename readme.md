@@ -32,7 +32,6 @@ SRwithenhancedSOP/
 ├── config.yaml            # Main configuration file
 ├── environment.yml        # Conda environment definition
 ├── main.py                # Main application entry point
-├── audio_transcriber.spec # PyInstaller build specification
 └── readme.md              # This file
 ```
 *(Structure slightly simplified for readability)*
@@ -71,7 +70,7 @@ See `docs/high_level/installation.md` for detailed steps. A summary:
 6.  **(Optional) Build Executable:**
     ```bash
     pip install pyinstaller # If not already installed via environment.yml
-    pyinstaller audio_transcriber.spec
+    pyinstaller --name PG_Transcriber main.py
     ```
     *Note: If building, ensure `config.yaml` is placed correctly relative to the executable as described in the Run Instructions.*
 
@@ -101,11 +100,11 @@ See `docs/high_level/installation.md` for detailed steps. A summary:
         ```
     *   **Using Built Executable (if built):**
         ```bash
-        cd dist/audio_transcriber # Or wherever the build output is
+        cd dist/ # Or wherever the build output is
         # Ensure config.yaml is in this directory
-        audio_transcriber.exe --monitor
+        PG_Transcriber.exe --monitor
         # OR
-        audio_transcriber.exe <STUDY_KEY>
+        PG_Transcriber.exe <STUDY_KEY>
         ```
 
 --- 

@@ -22,12 +22,20 @@ This module is responsible for persisting the final transcribed reports **into t
     *   Potential errors related to data parsing or unexpected database function results.
 *   **Workflow:**
     1.  Establishes a connection to the Oracle database.
-    2.  Likely parses the `report_list` if necessary.
-    3.  Calls Oracle functions or executes SQL/PLSQL statements to:
-        *   Insert the report text into the appropriate table (e.g., `TREPORTTEXT` via `F_INSERT_TEXT`).
-        *   Update the status in `TREPORT` (e.g., set `REPORT_STAT = 4010`).
-        *   Potentially update related tables like `TSTUDY`.
-    4.  Manages database transactions (commit/rollback).
+    2.  Parses the input `report_list`:
+        *   If it's a string, attempts to parse it as JSON.
+        *   Expects the result to be a list containing a single dictionary (e.g., `[{"Reading": "...", "Conclusion": "..."}]`).
+        *   Extracts the "Reading" and "Conclusion" text from the dictionary.
+    3.  Retrieves the specific `REPORT_KEY` from `TREPORT` for the given `study_key` where `REPORT_STAT` was initially 3010.
+    4.  Calls the Oracle function `DEB_TREPORT.F_GET_TEXTKEY`.
+    5.  Calls the Oracle function `DEB_TREPORT.F_INSERT_TEXT` with the report details (Reading, Conclusion).
+    6.  Retrieves `INSTITUTION_KEY` and `SRC_PATIENT_ID` from `TSTUDY`.
+    7.  Calls the Oracle function `DEB_TREPORT.F_UPDATE` with various parameters including keys and the new status (4010).
+    8.  Explicitly updates `TREPORT` table, setting `REPORT_STAT` to 4010 for the retrieved `REPORT_KEY`.
+    9.  Explicitly updates `TSTUDY` table, setting `STUDYSTAT` to 4010 for the `study_key`.
+    10. Commits the transaction.
+    11. Handles errors by attempting a rollback and logging.
+    12. Closes cursor and connection in a `finally` block.
 
 ## Key Functionality
 
@@ -58,7 +66,8 @@ Execution of this module is controlled by the following setting in `config.yaml`
 
 *   `oracledb`: For Oracle database connectivity.
 *   `logging`: For logging operations and errors.
-*   Potentially `json` if `report_list` needs parsing.
+*   `json`: For parsing the report list if provided as a string.
+*   `datetime`, `traceback`: Standard library utilities.
 
 ## Usage Example
 
