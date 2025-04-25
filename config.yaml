@@ -1,0 +1,30 @@
+# config.yaml
+GEMINI_API_KEY: "YOUR_API_KEY_HERE"
+SR_OUTPUT_FOLDER: "C:\\RaoufSoft\\Spool\\101"  # You have to create a register service to listen for DICOM SR files here.
+MODEL_NAME: "gemini-2.0-flash"  # Variants could be "gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-thinking-exp"
+
+ORACLE_HOST: "127.0.0.1"
+ORACLE_PORT: 1521
+ORACLE_SERVICE_NAME: "persiangulf"
+ORACLE_USERNAME: "your_oracle_username"
+ORACLE_PASSWORD: "your_oracle_password"
+
+LONGTERM_USERNAME: "your_longterm_username"
+LONGTERM_PASSWORD: "your_longterm_password"
+
+LOGGING_LEVELS:
+  basic: "INFO"
+  detailed: "DEBUG"
+  error: "ERROR"
+
+ENCAPSULATE_TEXT_AS_ENHANCED_SR: "OFF"
+STORE_TRANSCRIBED_REPORT: "ON"
+PRINT_GEMINI_OUTPUT: "ON"
+
+# ----------------- MongoDB Configuration -----------------
+MONGODB_URI: "mongodb://localhost:27017/"  # Standard MongoDB connection URI
+MONGODB_DATABASE: "audio_transcriber_db"   # Name for the database
+
+# ----------------- Network Share Configuration (Optional) -----------------
+SHARE_USERNAME: "your_share_username"  # Format as needed by WNetAddConnection2
+SHARE_PASSWORD: "your_share_password"
