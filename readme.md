@@ -1,4 +1,4 @@
-# Audio Transcriber Service with Enhanced SR and Dashboard
+# DICOM Audio Transcriber Service with Enhanced SR and Dashboard
 
 This project provides a service to monitor for medical studies, extract associated audio dictations, transcribe them, store the results, and optionally generate DICOM Enhanced Structured Reports (SR). It now includes a web dashboard to monitor the status of processing.
 
